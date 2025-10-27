@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using RenameIt;
+using Serilog;
 
 namespace RenameIt.CLI
 {
@@ -11,14 +12,20 @@ namespace RenameIt.CLI
     {
         public static async Task<int> RenameAsync(RenameOptions opts)
         {
+            Log.Information("Starting rename operation. Input: {Input}, Pattern: {Pattern}, Source: {Source}", 
+                opts.Input, opts.Pattern, opts.Source);
+            
             var files = GetFiles(opts.Input, opts.Recursive, opts.FileFilter, opts.MaxDepth);
             
             if (files.Count == 0)
             {
                 if (!opts.Quiet)
                     Console.WriteLine("No files found.");
+                Log.Warning("No files found for input: {Input}", opts.Input);
                 return 1;
             }
+
+            Log.Information("Found {FileCount} file(s) to process", files.Count);
 
             if (!opts.Quiet)
             {
@@ -128,6 +135,8 @@ namespace RenameIt.CLI
             var successCount = 0;
             var failCount = 0;
 
+            Log.Information("Starting file rename operations. Backup: {Backup}, DryRun: {DryRun}", opts.Backup, opts.DryRun);
+
             foreach (var result in results.Where(r => r.Success))
             {
                 try
@@ -136,12 +145,14 @@ namespace RenameIt.CLI
                     {
                         var backupPath = result.Original + ".backup";
                         File.Copy(result.Original, backupPath, true);
+                        Log.Debug("Created backup: {BackupPath}", backupPath);
                     }
 
                     // Use copy/delete for output directory, move for in-place
                     if (!string.IsNullOrEmpty(opts.OutputDirectory))
                     {
                         File.Copy(result.Original, result.Renamed, opts.Overwrite);
+                        Log.Information("Copied file: {Original} -> {Renamed}", result.Original, result.Renamed);
                     }
                     else
                     {
@@ -149,6 +160,7 @@ namespace RenameIt.CLI
                         if (result.Original != result.Renamed)
                         {
                             File.Move(result.Original, result.Renamed, opts.Overwrite);
+                            Log.Information("Renamed file: {Original} -> {Renamed}", result.Original, result.Renamed);
                         }
                     }
                     successCount++;
@@ -158,6 +170,7 @@ namespace RenameIt.CLI
                 }
                 catch (Exception ex)
                 {
+                    Log.Error(ex, "Failed to rename file: {Original} -> {Renamed}", result.Original, result.Renamed);
                     if (!opts.Quiet)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -167,6 +180,8 @@ namespace RenameIt.CLI
                     failCount++;
                 }
             }
+
+            Log.Information("Rename operation completed. Success: {SuccessCount}, Failed: {FailCount}", successCount, failCount);
 
             if (!opts.Quiet)
             {
@@ -188,6 +203,8 @@ namespace RenameIt.CLI
 
         public static async Task<int> PreviewAsync(PreviewOptions opts)
         {
+            Log.Information("Starting preview operation. Input: {Input}, Pattern: {Pattern}", opts.Input, opts.Pattern);
+            
             var renameOpts = new RenameOptions
             {
                 Input = opts.Input,
@@ -209,8 +226,11 @@ namespace RenameIt.CLI
 
         public static async Task<int> BatchAsync(BatchOptions opts)
         {
+            Log.Information("Starting batch operation. Script: {Script}", opts.Script);
+            
             if (!File.Exists(opts.Script))
             {
+                Log.Error("Script file not found: {Script}", opts.Script);
                 if (!opts.Quiet)
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -223,6 +243,8 @@ namespace RenameIt.CLI
             var lines = await File.ReadAllLinesAsync(opts.Script);
             var commands = ParseBatchScript(lines);
 
+            Log.Information("Parsed {CommandCount} command(s) from batch script", commands.Count);
+
             if (!opts.Quiet)
             {
                 Console.WriteLine($"Executing batch script: {opts.Script}");
@@ -233,6 +255,9 @@ namespace RenameIt.CLI
             int totalErrors = 0;
             foreach (var (index, command) in commands.Select((cmd, idx) => (idx + 1, cmd)))
             {
+                Log.Information("Executing batch command {Index}/{Total}: Input={Input}, Pattern={Pattern}", 
+                    index, commands.Count, command.Input, command.Pattern);
+                
                 if (!opts.Quiet)
                     Console.WriteLine($"--- Command {index}/{commands.Count} ---");
                 
@@ -254,8 +279,10 @@ namespace RenameIt.CLI
                     if (result != 0)
                     {
                         totalErrors++;
+                        Log.Warning("Batch command {Index} completed with errors", index);
                         if (!opts.ContinueOnError)
                         {
+                            Log.Information("Batch execution stopped due to error");
                             if (!opts.Quiet)
                                 Console.WriteLine("Batch execution stopped due to error.");
                             return result;
@@ -265,6 +292,7 @@ namespace RenameIt.CLI
                 catch (Exception ex)
                 {
                     totalErrors++;
+                    Log.Error(ex, "Error executing batch command {Index}", index);
                     if (!opts.Quiet)
                     {
                         Console.ForegroundColor = ConsoleColor.Red;
@@ -279,6 +307,8 @@ namespace RenameIt.CLI
                 if (!opts.Quiet)
                     Console.WriteLine();
             }
+
+            Log.Information("Batch operation completed. Total errors: {TotalErrors}", totalErrors);
 
             if (!opts.Quiet)
             {
