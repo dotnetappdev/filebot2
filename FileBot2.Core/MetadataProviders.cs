@@ -17,7 +17,8 @@ namespace FileBot2
     public class TheMovieDBProvider : IMetadataProvider
     {
         private readonly HttpClient _httpClient;
-        private const string ApiKey = "demo"; // In a real app, this would be from config
+        // TODO: In production, move this to configuration or secure key storage
+        private const string ApiKey = "demo"; // Replace with actual API key from configuration
 
         public TheMovieDBProvider()
         {
@@ -132,8 +133,15 @@ namespace FileBot2
 
         public async Task<MovieMetadata?> SearchMovieAsync(string movieName, int? year = null)
         {
-            await Task.Delay(100);
-            return new MovieMetadata { Title = movieName, Year = year ?? 2020, Id = "movie123" };
+            try
+            {
+                await Task.Delay(100);
+                return new MovieMetadata { Title = movieName, Year = year ?? 2020, Id = "movie123" };
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 

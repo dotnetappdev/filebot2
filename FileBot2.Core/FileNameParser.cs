@@ -6,6 +6,23 @@ namespace FileBot2
 {
     public class FileNameParser
     {
+        // Compiled regex patterns for better performance
+        private static readonly Regex TvShowRegex = new Regex(
+            @"^(.+?)[\s\._\-]+[Ss]?(\d{1,2})[Ee](\d{2,3})(?:[\s\._\-]+(.+))?$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static readonly Regex AlternateTvRegex = new Regex(
+            @"^(.+?)[\s\-]+(\d{1,2})[xX](\d{2})(?:[\s\-]+(.+?))?$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static readonly Regex MovieRegex = new Regex(
+            @"^(.+?)[\s\._\-]+(\d{4})(?:[\s\._\-]+.+)?$",
+            RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+        private static readonly Regex CleanNameRegex = new Regex(
+            @"\s+",
+            RegexOptions.Compiled);
+
         public FileMetadata ParseFileName(string fileName)
         {
             var metadata = new FileMetadata
@@ -18,9 +35,7 @@ namespace FileBot2
             metadata.Extension = System.IO.Path.GetExtension(fileName);
 
             // Try to parse TV show format: Show.Name.S01E02.Title
-            var tvShowMatch = Regex.Match(nameWithoutExt, 
-                @"^(.+?)[\s\._\-]+[Ss]?(\d{1,2})[Ee](\d{2,3})(?:[\s\._\-]+(.+))?$",
-                RegexOptions.IgnoreCase);
+            var tvShowMatch = TvShowRegex.Match(nameWithoutExt);
 
             if (tvShowMatch.Success)
             {
@@ -35,9 +50,7 @@ namespace FileBot2
             }
 
             // Try alternative format: Show Name - 1x02 - Title
-            var altTvMatch = Regex.Match(nameWithoutExt,
-                @"^(.+?)[\s\-]+(\d{1,2})[xX](\d{2})(?:[\s\-]+(.+?))?$",
-                RegexOptions.IgnoreCase);
+            var altTvMatch = AlternateTvRegex.Match(nameWithoutExt);
 
             if (altTvMatch.Success)
             {
@@ -52,9 +65,7 @@ namespace FileBot2
             }
 
             // Try to parse movie format: Movie.Name.2020.1080p.BluRay
-            var movieMatch = Regex.Match(nameWithoutExt,
-                @"^(.+?)[\s\._\-]+(\d{4})(?:[\s\._\-]+.+)?$",
-                RegexOptions.IgnoreCase);
+            var movieMatch = MovieRegex.Match(nameWithoutExt);
 
             if (movieMatch.Success)
             {
@@ -73,10 +84,10 @@ namespace FileBot2
         private string CleanName(string name)
         {
             // Replace dots, underscores with spaces
-            name = Regex.Replace(name, @"[\._]", " ");
+            name = name.Replace('.', ' ').Replace('_', ' ');
             
-            // Remove extra spaces
-            name = Regex.Replace(name, @"\s+", " ");
+            // Remove extra spaces using compiled regex
+            name = CleanNameRegex.Replace(name, " ");
             
             // Trim
             name = name.Trim();

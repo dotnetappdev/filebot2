@@ -85,22 +85,40 @@ namespace FileBot2
 
         private string CleanFileName(string fileName)
         {
-            // Remove invalid characters
-            char[] invalidChars = System.IO.Path.GetInvalidFileNameChars();
-            foreach (char c in invalidChars)
+            // Use HashSet for faster character lookups
+            var invalidChars = new HashSet<char>(System.IO.Path.GetInvalidFileNameChars());
+            var result = new System.Text.StringBuilder(fileName.Length);
+
+            foreach (char c in fileName)
             {
-                fileName = fileName.Replace(c.ToString(), "");
+                if (invalidChars.Contains(c))
+                {
+                    // Skip invalid characters
+                    continue;
+                }
+                else if (c == ':')
+                {
+                    result.Append(" -");
+                }
+                else if (c == '?')
+                {
+                    // Skip question marks
+                }
+                else if (c == '"')
+                {
+                    result.Append('\'');
+                }
+                else
+                {
+                    result.Append(c);
+                }
             }
 
-            // Replace some characters with spaces for readability
-            fileName = fileName.Replace(":", " -");
-            fileName = fileName.Replace("?", "");
-            fileName = fileName.Replace("\"", "'");
-
             // Clean up multiple spaces
-            fileName = Regex.Replace(fileName, @"\s+", " ").Trim();
+            string cleaned = result.ToString();
+            cleaned = Regex.Replace(cleaned, @"\s+", " ").Trim();
 
-            return fileName;
+            return cleaned;
         }
     }
 }
