@@ -23,6 +23,7 @@ A file renaming application for media files (Plex, Kodi, etc.) built with C#, in
 ### Advanced Features
 - **CLI Tool**: Command-line interface for automation and scripting
 - **Batch Scripts**: Execute multiple rename operations from script files
+- **Template Management**: Save and reuse rename patterns with built-in template database
 - **Settings Dialog**: Configure API keys, default patterns, backup folder, and more
 - **Backup Before Rename**: Automatically backup files before renaming
 - **Theme Support**: Light and dark mode with system default option
@@ -150,25 +151,33 @@ renameit batch rename-script.txt
 
 ```
 RenameIt/
-├── App.xaml / App.xaml.cs         - Application entry point
-├── MainWindow.xaml / .xaml.cs     - Main UI and logic
-└── RenameIt.csproj                - GUI project configuration
+├── App.xaml / App.xaml.cs                   - Application entry point
+├── MainWindow.xaml / .xaml.cs               - Main UI and logic
+├── SettingsDialog.xaml / .xaml.cs           - Settings configuration UI
+├── TemplatesDialog.xaml / .xaml.cs          - Template management UI
+├── TemplateEditDialog.xaml / .xaml.cs       - Template add/edit UI
+├── AppSettings.cs                           - Application settings persistence
+└── RenameIt.csproj                          - GUI project configuration
 
 RenameIt.CLI/
-├── Program.cs                     - CLI entry point and command definitions
-├── CommandHandlers.cs             - CLI command implementations
-└── RenameIt.CLI.csproj            - CLI project configuration
+├── Program.cs                               - CLI entry point and command definitions
+├── CommandHandlers.cs                       - CLI command implementations
+└── RenameIt.CLI.csproj                      - CLI project configuration
 
 RenameIt.Core/
-├── FileNameParser.cs              - Parses filenames to extract metadata
-├── FileRenamer.cs                 - Applies format patterns to create new names
-├── MetadataProviders.cs           - Interfaces with movie/TV databases
-└── RenameIt.Core.csproj           - Core library configuration
+├── FileNameParser.cs                        - Parses filenames to extract metadata
+├── FileRenamer.cs                           - Applies format patterns to create new names
+├── MetadataProviders.cs                     - Interfaces with movie/TV databases
+├── RenameTemplate.cs                        - Template data model
+├── TemplateRepository.cs                    - SQLite database operations for templates
+└── RenameIt.Core.csproj                     - Core library configuration
 
 RenameIt.Tests/
-├── FileNameParserTests.cs         - Parser unit tests
-├── FileRenamerTests.cs            - Renamer unit tests
-└── RenameIt.Tests.csproj          - Test project configuration
+├── FileNameParserTests.cs                   - Parser unit tests
+├── FileRenamerTests.cs                      - Renamer unit tests
+├── TemplateRepositoryTests.cs               - Template repository unit tests
+├── CLICommandHandlersTests.cs               - CLI command handler tests
+└── RenameIt.Tests.csproj                    - Test project configuration
 ```
 
 ## Architecture
@@ -176,7 +185,10 @@ RenameIt.Tests/
 - **FileNameParser**: Extracts show names, seasons, episodes, and years from filenames
 - **FileRenamer**: Applies format patterns using FileBot-compatible syntax
 - **MetadataProviders**: Fetch additional metadata from online sources
+- **TemplateRepository**: Manages template CRUD operations with SQLite database
 - **MainWindow**: Manages the UI with dual data grids for original and renamed files
+- **TemplatesDialog**: Provides UI for managing saved rename templates
+- **CommandHandlers**: Implements CLI commands for rename, preview, and batch operations
 
 ## License
 
