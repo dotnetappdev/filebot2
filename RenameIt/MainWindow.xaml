@@ -65,21 +65,43 @@
 
         <!-- Format Pattern -->
         <Grid Grid.Row="2" Padding="10" Background="{ThemeResource SystemControlBackgroundAltMediumBrush}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             
-            <TextBlock Grid.Column="0" Text="Format Pattern:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-            <TextBox Grid.Column="1" x:Name="FormatPatternTextBox" 
+            <!-- Template Selection Row -->
+            <TextBlock Grid.Row="0" Grid.Column="0" Text="Template:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+            <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <ComboBox x:Name="TemplateComboBox" 
+                          MinWidth="250"
+                          PlaceholderText="Select a template..."
+                          SelectionChanged="TemplateComboBox_SelectionChanged">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Button Content="&#xE70F; Manage Templates" Click="ManageTemplatesButton_Click"/>
+            </StackPanel>
+            
+            <!-- Format Pattern Row -->
+            <TextBlock Grid.Row="1" Grid.Column="0" Text="Format Pattern:" VerticalAlignment="Center" Margin="0,10,10,0"/>
+            <TextBox Grid.Row="1" Grid.Column="1" x:Name="FormatPatternTextBox" 
                      PlaceholderText="e.g., {n} - {s00e00} - {t}" 
                      Text="{n} - {s00e00} - {t}"
                      TextChanged="FormatPatternTextBox_TextChanged"
-                     FontFamily="Consolas"/>
-            <ComboBox Grid.Column="2" x:Name="SourceComboBox" 
+                     FontFamily="Consolas"
+                     Margin="0,10,0,0"/>
+            <ComboBox Grid.Row="1" Grid.Column="2" x:Name="SourceComboBox" 
                       SelectedIndex="0" 
-                      Margin="10,0,0,0"
+                      Margin="10,10,0,0"
                       SelectionChanged="SourceComboBox_SelectionChanged">
                 <ComboBoxItem Content="TheMovieDB"/>
                 <ComboBoxItem Content="TVMaze"/>

@@ -1,5 +1,6 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using RenameIt.Core;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -19,11 +20,15 @@ namespace RenameIt
         private string _currentFormatPattern = "{n} - {s00e00} - {t}";
         private string _currentSource = "TheMovieDB";
         private AppSettings _settings;
+        private TemplateRepository _templateRepository;
 
         public MainWindow()
         {
             this.InitializeComponent();
             _settings = AppSettings.Load();
+            _templateRepository = new TemplateRepository(_settings.TemplatesDatabasePath);
+            _templateRepository.SeedDefaultTemplates();
+            
             OriginalFilesDataGrid.ItemsSource = _originalFiles;
             RenamedFilesDataGrid.ItemsSource = _renamedFiles;
             
@@ -34,6 +39,7 @@ namespace RenameIt
             _currentFormatPattern = _settings.DefaultFormatPattern;
             
             ApplyTheme(_settings.Theme);
+            LoadTemplates();
         }
 
         private void ApplyTheme(string theme)
@@ -379,6 +385,31 @@ namespace RenameIt
                     };
                     _renamedFiles.Add(renamedItem);
                 }
+            }
+        }
+
+        private void LoadTemplates()
+        {
+            var templates = _templateRepository.GetAll();
+            TemplateComboBox.ItemsSource = templates;
+        }
+
+        private async void ManageTemplatesButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new TemplatesDialog(_templateRepository)
+            {
+                XamlRoot = this.Content.XamlRoot
+            };
+            
+            await dialog.ShowAsync();
+            LoadTemplates();
+        }
+
+        private void TemplateComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TemplateComboBox.SelectedItem is RenameTemplate template)
+            {
+                FormatPatternTextBox.Text = template.Pattern;
             }
         }
     }
