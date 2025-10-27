@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FileBot2.Core\FileBot2.Core.csproj" />
+    <ProjectReference Include="..\RenameIt.Core\RenameIt.Core.csproj" />
   </ItemGroup>
 
 </Project>

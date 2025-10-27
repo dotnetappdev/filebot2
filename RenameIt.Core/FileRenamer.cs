@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace FileBot2
+namespace RenameIt
 {
     public class FileRenamer
     {

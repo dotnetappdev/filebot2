@@ -1,15 +1,15 @@
-# FileBot2
+# RenameIt
 
-A Windows file renaming application built with WinUI 3 and C#, inspired by FileBot's powerful renaming capabilities.
+A Windows file renaming application built with WinUI 3 and C#, inspired by FileBot's powerful renaming capabilities and using FileBot-compatible naming syntax.
 
 ## Features
 
 - **Dual-Pane Interface**: View original files on the left and renamed preview on the right
-- **FileBot-Compatible Syntax**: Use familiar format patterns like `{n} - {s00e00} - {t}`
+- **FileBot-Compatible Syntax**: Use familiar format patterns like `{n} - {s00e00} - {t}` (see [FileBot naming reference](https://www.filebot.net/naming.html))
 - **Multiple Metadata Sources**: 
-  - TheMovieDB
-  - TVMaze
-  - TheTVDB
+  - [TheMovieDB](https://www.themoviedb.org/?language=en-GB) - Comprehensive movie and TV database
+  - [TheTVDB](https://www.thetvdb.com/) - Extensive TV show database
+  - TVMaze - Current TV show information
 - **Flexible File Selection**: Select files individually or by folder
 - **Smart Parsing**: Automatically detects TV shows and movies from filenames
 - **Data Grid Views**: Long list views with file details displayed in an organized grid
@@ -17,7 +17,7 @@ A Windows file renaming application built with WinUI 3 and C#, inspired by FileB
 
 ## Format Syntax
 
-FileBot2 supports the following format patterns:
+RenameIt supports the following FileBot-compatible format patterns:
 
 - `{n}` - Name (show name or movie name)
 - `{s}` - Season number
@@ -52,7 +52,7 @@ FileBot2 supports the following format patterns:
 
 ### Build Instructions
 
-1. Open `FileBot2.sln` in Visual Studio 2022
+1. Open `RenameIt.sln` in Visual Studio 2022
 2. Restore NuGet packages
 3. Build the solution (F7)
 4. Run the application (F5)
@@ -76,13 +76,21 @@ dotnet run
 ## Project Structure
 
 ```
-FileBot2/
+RenameIt/
 ├── App.xaml / App.xaml.cs         - Application entry point
 ├── MainWindow.xaml / .xaml.cs     - Main UI and logic
+└── RenameIt.csproj                - Project configuration
+
+RenameIt.Core/
 ├── FileNameParser.cs              - Parses filenames to extract metadata
 ├── FileRenamer.cs                 - Applies format patterns to create new names
 ├── MetadataProviders.cs           - Interfaces with movie/TV databases
-└── FileBot2.csproj               - Project configuration
+└── RenameIt.Core.csproj           - Core library configuration
+
+RenameIt.Tests/
+├── FileNameParserTests.cs         - Parser unit tests
+├── FileRenamerTests.cs            - Renamer unit tests
+└── RenameIt.Tests.csproj          - Test project configuration
 ```
 
 ## Architecture

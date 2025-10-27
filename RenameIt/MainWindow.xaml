@@ -1,9 +1,9 @@
 <Window
-    x:Class="FileBot2.MainWindow"
+    x:Class="RenameIt.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
-    Title="FileBot2 - File Renaming Tool">
+    Title="RenameIt - File Renaming Tool">
 
     <Grid>
         <Grid.RowDefinitions>

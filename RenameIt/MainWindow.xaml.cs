@@ -10,7 +10,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using WinRT.Interop;
 
-namespace FileBot2
+namespace RenameIt
 {
     public partial class MainWindow : Window
     {

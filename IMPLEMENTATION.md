@@ -5,7 +5,7 @@ This PR implements a complete Windows file renaming application built with WinUI
 
 ## What Was Implemented
 
-### 1. Main Application (FileBot2)
+### 1. Main Application (RenameIt)
 - **WinUI 3 Application**: Modern Windows 11-style interface
 - **Dual-Pane Layout**: 
   - Left pane: Original files in a DataGrid
@@ -16,7 +16,7 @@ This PR implements a complete Windows file renaming application built with WinUI
 - **Live Preview**: Updates automatically when pattern or files change
 - **Rename Operation**: Applies changes with error handling
 
-### 2. Core Library (FileBot2.Core)
+### 2. Core Library (RenameIt.Core)
 Platform-independent business logic extracted for testability:
 
 #### FileNameParser
@@ -49,7 +49,7 @@ Platform-independent business logic extracted for testability:
 - Async API calls (currently simulated)
 - Consistent error handling
 
-### 3. Unit Tests (FileBot2.Tests)
+### 3. Unit Tests (RenameIt.Tests)
 Comprehensive test coverage:
 - **FileNameParserTests**: 7 tests
   - TV show formats (standard, lowercase, alternate)
@@ -129,7 +129,7 @@ Five comprehensive documentation files:
 
 ```
 ┌─────────────────────────────────────────────────┐
-│              FileBot2 (WinUI 3)                 │
+│              RenameIt (WinUI 3)                 │
 │  ┌───────────────────────────────────────────┐  │
 │  │         MainWindow.xaml.cs                │  │
 │  │  - File Selection                         │  │
@@ -140,7 +140,7 @@ Five comprehensive documentation files:
 └──────────────────┼───────────────────────────────┘
                    │ References
 ┌──────────────────▼───────────────────────────────┐
-│           FileBot2.Core (Library)                │
+│           RenameIt.Core (Library)                │
 │  ┌───────────────────────────────────────────┐  │
 │  │  FileNameParser                           │  │
 │  │  - Regex-based parsing                    │  │
@@ -160,7 +160,7 @@ Five comprehensive documentation files:
                    ▲
                    │ Tests
 ┌──────────────────┴───────────────────────────────┐
-│          FileBot2.Tests (xUnit)                  │
+│          RenameIt.Tests (xUnit)                  │
 │  - FileNameParserTests (7 tests)                 │
 │  - FileRenamerTests (7 tests)                    │
 │  - All tests passing ✓                           │
@@ -178,21 +178,21 @@ filebot2/
 ├── CONTRIBUTING.md               # Contributor guide
 ├── EXAMPLES.md                   # Usage examples
 ├── UI_DESIGN.md                  # UI specification
-├── FileBot2.sln                  # Solution file
-├── FileBot2/                     # Main WinUI app
-│   ├── FileBot2.csproj           # Project file
+├── RenameIt.sln                  # Solution file
+├── RenameIt/                     # Main WinUI app
+│   ├── RenameIt.csproj           # Project file
 │   ├── App.xaml                  # Application definition
 │   ├── App.xaml.cs               # App entry point
 │   ├── MainWindow.xaml           # Main UI layout
 │   ├── MainWindow.xaml.cs        # UI logic (9,416 chars)
 │   └── app.manifest              # Windows manifest
-├── FileBot2.Core/                # Core library
-│   ├── FileBot2.Core.csproj      # Project file
+├── RenameIt.Core/                # Core library
+│   ├── RenameIt.Core.csproj      # Project file
 │   ├── FileNameParser.cs         # Filename parser (4,570 chars)
 │   ├── FileRenamer.cs            # Format applier (3,469 chars)
 │   └── MetadataProviders.cs      # Metadata sources (6,014 chars)
-└── FileBot2.Tests/               # Unit tests
-    ├── FileBot2.Tests.csproj     # Project file
+└── RenameIt.Tests/               # Unit tests
+    ├── RenameIt.Tests.csproj     # Project file
     ├── FileNameParserTests.cs    # Parser tests (3,993 chars)
     └── FileRenamerTests.cs       # Renamer tests (4,741 chars)
 ```

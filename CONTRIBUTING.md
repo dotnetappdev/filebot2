@@ -1,6 +1,6 @@
-# Contributing to FileBot2
+# Contributing to RenameIt
 
-Thank you for considering contributing to FileBot2! This document provides guidelines and information for contributors.
+Thank you for considering contributing to RenameIt! This document provides guidelines and information for contributors.
 
 ## Development Setup
 
@@ -24,7 +24,7 @@ Thank you for considering contributing to FileBot2! This document provides guide
 
 3. Open the solution in Visual Studio:
    ```bash
-   start FileBot2.sln
+   start RenameIt.sln
    ```
 
 4. Restore NuGet packages:
@@ -41,15 +41,15 @@ Thank you for considering contributing to FileBot2! This document provides guide
 
 ```
 filebot2/
-├── FileBot2/              # Main WinUI 3 application
+├── RenameIt/              # Main WinUI 3 application
 │   ├── App.xaml          # Application entry point
 │   ├── MainWindow.xaml   # Main window UI
 │   └── ...
-├── FileBot2.Core/        # Core business logic (platform-independent)
+├── RenameIt.Core/        # Core business logic (platform-independent)
 │   ├── FileNameParser.cs
 │   ├── FileRenamer.cs
 │   └── MetadataProviders.cs
-└── FileBot2.Tests/       # Unit tests
+└── RenameIt.Tests/       # Unit tests
     ├── FileNameParserTests.cs
     └── FileRenamerTests.cs
 ```
@@ -73,7 +73,7 @@ filebot2/
 2. Make your changes following the code style guidelines
 
 3. Write tests for new functionality:
-   - Add tests to `FileBot2.Tests` project
+   - Add tests to `RenameIt.Tests` project
    - Ensure all tests pass:
      ```bash
      dotnet test
@@ -213,4 +213,4 @@ If you have questions about contributing, feel free to:
 - Open an issue with the "question" label
 - Start a discussion in the repository
 
-Thank you for contributing to FileBot2! 🎉
+Thank you for contributing to RenameIt! 🎉

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileBot2", "FileBot2\FileBot2.csproj", "{38B92DC5-E073-4AA0-8C89-BE00FB5335E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt", "RenameIt\RenameIt.csproj", "{38B92DC5-E073-4AA0-8C89-BE00FB5335E6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileBot2.Core", "FileBot2.Core\FileBot2.Core.csproj", "{8C9DA225-FFCE-4D5A-B971-89F058155B10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt.Core", "RenameIt.Core\RenameIt.Core.csproj", "{8C9DA225-FFCE-4D5A-B971-89F058155B10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileBot2.Tests", "FileBot2.Tests\FileBot2.Tests.csproj", "{0198F4F0-B975-4B53-9E94-A2275A8617F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt.Tests", "RenameIt.Tests\RenameIt.Tests.csproj", "{0198F4F0-B975-4B53-9E94-A2275A8617F5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

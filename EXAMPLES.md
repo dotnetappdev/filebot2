@@ -1,6 +1,6 @@
 # Example Workflows
 
-This document provides real-world examples of how to use FileBot2 for common file renaming tasks.
+This document provides real-world examples of how to use RenameIt for common file renaming tasks.
 
 ## Workflow 1: Organizing a TV Show Collection
 
@@ -142,10 +142,10 @@ You want to organize files into season folders with a specific naming pattern.
      └── breaking.bad.s02e02.mkv
    ```
 
-2. **Note**: Currently FileBot2 renames files in-place. For folder organization:
+2. **Note**: Currently RenameIt renames files in-place. For folder organization:
    - Manually create season folders first
    - Move files to appropriate folders
-   - Then use FileBot2 to rename
+   - Then use RenameIt to rename
 
 3. **Future Enhancement**
    - Pattern like: `{n}/Season {s00}/{n} - {s00e00} - {t}`
@@ -163,7 +163,7 @@ Episode titles have special characters that need cleaning:
 
 1. Load the file
 2. Use standard pattern: `{n} - {s00e00} - {t}`
-3. FileBot2 automatically cleans invalid characters:
+3. RenameIt automatically cleans invalid characters:
    - `:` becomes ` -`
    - `/` is removed
    - `?` is removed
@@ -227,7 +227,7 @@ A folder contains both movies and TV episodes.
 ## Tips and Tricks
 
 ### Tip 1: Save Common Patterns
-While FileBot2 doesn't have pattern saving yet, keep your favorite patterns in a text file:
+While RenameIt doesn't have pattern saving yet, keep your favorite patterns in a text file:
 ```
 TV Shows: {n} - {s00e00} - {t}
 Movies: {n} ({y})
@@ -242,7 +242,7 @@ Before batch renaming:
 3. Once confirmed working, apply to originals
 
 ### Tip 3: Check File Extensions
-FileBot2 preserves file extensions automatically, so:
+RenameIt preserves file extensions automatically, so:
 - `.mkv` stays `.mkv`
 - `.avi` stays `.avi`
 - `.mp4` stays `.mp4`

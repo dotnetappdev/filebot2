@@ -1,7 +1,7 @@
 using Microsoft.UI.Xaml;
 using System;
 
-namespace FileBot2
+namespace RenameIt
 {
     public partial class App : Application
     {

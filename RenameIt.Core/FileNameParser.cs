@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
-namespace FileBot2
+namespace RenameIt
 {
     public class FileNameParser
     {

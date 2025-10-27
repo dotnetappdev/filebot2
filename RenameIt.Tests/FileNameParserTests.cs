@@ -1,7 +1,7 @@
 using Xunit;
-using FileBot2;
+using RenameIt;
 
-namespace FileBot2.Tests
+namespace RenameIt.Tests
 {
     public class FileNameParserTests
     {

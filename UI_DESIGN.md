@@ -1,12 +1,12 @@
-# FileBot2 UI Design
+# RenameIt UI Design
 
-This document describes the user interface layout and design of FileBot2.
+This document describes the user interface layout and design of RenameIt.
 
 ## Main Window Layout
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
-│ FileBot2 - File Renaming Tool                                      [_][□][X]│
+│ RenameIt - File Renaming Tool                                      [_][□][X]│
 ├─────────────────────────────────────────────────────────────────────────────┤
 │ [Select Folder] [Select Files] [Clear]                   [Rename Files]     │
 ├─────────────────────────────────────────────────────────────────────────────┤

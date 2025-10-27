@@ -1,6 +1,8 @@
-# FileBot2 Format Syntax Guide
+# RenameIt Format Syntax Guide
 
-This guide provides comprehensive examples of the format syntax used in FileBot2 for renaming files.
+This guide provides comprehensive examples of the format syntax used in RenameIt for renaming files.
+
+RenameIt uses [FileBot-compatible naming syntax](https://www.filebot.net/naming.html) for maximum compatibility and ease of use.
 
 ## Basic Format Tokens
 
@@ -97,7 +99,7 @@ FileBot2 can parse the following common filename patterns:
 
 1. **Test First**: Always preview the renamed files before applying changes
 2. **Use Consistent Patterns**: Stick to one format pattern for your entire collection
-3. **Check for Special Characters**: FileBot2 automatically removes invalid filename characters
+3. **Check for Special Characters**: RenameIt automatically removes invalid filename characters
 4. **Backup Important Files**: Make backups before batch renaming
 5. **Process in Batches**: Rename one folder at a time to catch any issues early
 
@@ -112,9 +114,9 @@ While basic conditional formatting is not yet implemented, you can work around i
 
 ### Metadata Sources
 
-FileBot2 supports three metadata sources:
-1. **TheMovieDB**: Best for movies and TV shows
-2. **TVMaze**: Good for TV show metadata
-3. **TheTVDB**: Traditional TV database
+RenameIt supports three metadata sources:
+1. **[TheMovieDB](https://www.themoviedb.org/?language=en-GB)**: Best for movies and TV shows - comprehensive database with extensive metadata
+2. **[TheTVDB](https://www.thetvdb.com/)**: Traditional TV database - excellent for TV series information
+3. **TVMaze**: Good for TV show metadata - especially current shows
 
 Choose the source that best matches your content type.
