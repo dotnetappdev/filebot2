@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt.Core", "RenameIt.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt.Tests", "RenameIt.Tests\RenameIt.Tests.csproj", "{0198F4F0-B975-4B53-9E94-A2275A8617F5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RenameIt.CLI", "RenameIt.CLI\RenameIt.CLI.csproj", "{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{0198F4F0-B975-4B53-9E94-A2275A8617F5}.Release|x64.Build.0 = Release|Any CPU
 		{0198F4F0-B975-4B53-9E94-A2275A8617F5}.Release|x86.ActiveCfg = Release|Any CPU
 		{0198F4F0-B975-4B53-9E94-A2275A8617F5}.Release|x86.Build.0 = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|x64.Build.0 = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Debug|x86.Build.0 = Debug|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|x64.ActiveCfg = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|x64.Build.0 = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|x86.ActiveCfg = Release|Any CPU
+		{9F5ED002-4C1F-40E2-8865-4220ACDD73EB}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
