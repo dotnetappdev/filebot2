@@ -19,7 +19,7 @@ namespace FileBot2
 
             // Try to parse TV show format: Show.Name.S01E02.Title
             var tvShowMatch = Regex.Match(nameWithoutExt, 
-                @"^(.+?)[\s\._\-]+[Ss]?(\d{1,2})[Ee](\d{2,3})(?:[\s\._\-]+(.+?))?(?:[\s\._\-]+\d{3,4}p)?(?:[\s\._\-]+[a-zA-Z0-9]+)?$",
+                @"^(.+?)[\s\._\-]+[Ss]?(\d{1,2})[Ee](\d{2,3})(?:[\s\._\-]+(.+))?$",
                 RegexOptions.IgnoreCase);
 
             if (tvShowMatch.Success)
