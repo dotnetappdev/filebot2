@@ -5,7 +5,9 @@ namespace RenameIt
 {
     public partial class App : Application
     {
-        private Window? m_window;
+        public Window? MainWindow { get; private set; }
+
+        public static new App Current => (App)Application.Current;
 
         public App()
         {
@@ -14,8 +16,8 @@ namespace RenameIt
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            m_window = new MainWindow();
-            m_window.Activate();
+            MainWindow = new MainWindow();
+            MainWindow.Activate();
         }
     }
 }

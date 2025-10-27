@@ -9,22 +9,62 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <!-- Top Menu Bar -->
         <Grid Grid.Row="0" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" Padding="10">
-            <StackPanel Orientation="Horizontal" Spacing="10">
-                <Button x:Name="SelectFolderButton" Content="Select Folder" Click="SelectFolderButton_Click"/>
-                <Button x:Name="SelectFilesButton" Content="Select Files" Click="SelectFilesButton_Click"/>
-                <Button x:Name="ClearButton" Content="Clear" Click="ClearButton_Click"/>
-                <Button x:Name="RenameButton" Content="Rename Files" Click="RenameButton_Click" Style="{StaticResource AccentButtonStyle}"/>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10">
+                <Button x:Name="SelectFolderButton" Content="&#xE8B7; Select Folder" Click="SelectFolderButton_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="O" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button x:Name="SelectFilesButton" Content="&#xE8E5; Select Files" Click="SelectFilesButton_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="O" Modifiers="Control,Shift"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button x:Name="ClearButton" Content="&#xE894; Clear" Click="ClearButton_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Delete" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+                <Button x:Name="RenameButton" Content="&#xE73E; Rename Files" Click="RenameButton_Click" Style="{StaticResource AccentButtonStyle}">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="R" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10">
+                <ToggleButton x:Name="ThemeToggle" Content="&#xE793;" ToolTipService.ToolTip="Toggle Theme" Click="ThemeToggle_Click"/>
+                <Button x:Name="SettingsButton" Content="&#xE713;" ToolTipService.ToolTip="Settings" Click="SettingsButton_Click">
+                    <Button.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Comma" Modifiers="Control"/>
+                    </Button.KeyboardAccelerators>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Options Bar -->
+        <Grid Grid.Row="1" Padding="10" Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
+            <StackPanel Orientation="Horizontal" Spacing="15">
+                <CheckBox x:Name="RecursiveCheckBox" Content="Include Subdirectories" IsChecked="False"/>
+                <CheckBox x:Name="BackupCheckBox" Content="Backup Before Rename" IsChecked="False"/>
             </StackPanel>
         </Grid>
 
         <!-- Format Pattern -->
-        <Grid Grid.Row="1" Padding="10" Background="{ThemeResource SystemControlBackgroundAltHighBrush}">
+        <Grid Grid.Row="2" Padding="10" Background="{ThemeResource SystemControlBackgroundAltMediumBrush}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
@@ -35,7 +75,8 @@
             <TextBox Grid.Column="1" x:Name="FormatPatternTextBox" 
                      PlaceholderText="e.g., {n} - {s00e00} - {t}" 
                      Text="{n} - {s00e00} - {t}"
-                     TextChanged="FormatPatternTextBox_TextChanged"/>
+                     TextChanged="FormatPatternTextBox_TextChanged"
+                     FontFamily="Consolas"/>
             <ComboBox Grid.Column="2" x:Name="SourceComboBox" 
                       SelectedIndex="0" 
                       Margin="10,0,0,0"
@@ -47,7 +88,7 @@
         </Grid>
 
         <!-- Main Content - Dual Pane Layout -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="5"/>
@@ -110,9 +151,21 @@
             </Grid>
         </Grid>
 
+        <!-- Progress Bar -->
+        <ProgressBar Grid.Row="4" x:Name="OperationProgressBar" 
+                     Visibility="Collapsed" 
+                     IsIndeterminate="False"
+                     Minimum="0" Maximum="100" Value="0"
+                     Margin="10,5,10,5"/>
+
         <!-- Status Bar -->
-        <Grid Grid.Row="3" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" Padding="10">
-            <TextBlock x:Name="StatusTextBlock" Text="Ready" VerticalAlignment="Center"/>
+        <Grid Grid.Row="5" Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}" Padding="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" x:Name="StatusTextBlock" Text="Ready" VerticalAlignment="Center"/>
+            <TextBlock Grid.Column="1" x:Name="FileCountTextBlock" Text="" VerticalAlignment="Center" Margin="10,0,0,0"/>
         </Grid>
     </Grid>
 </Window>

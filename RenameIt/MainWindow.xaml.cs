@@ -18,12 +18,67 @@ namespace RenameIt
         private ObservableCollection<RenamedFileItem> _renamedFiles = new();
         private string _currentFormatPattern = "{n} - {s00e00} - {t}";
         private string _currentSource = "TheMovieDB";
+        private AppSettings _settings;
 
         public MainWindow()
         {
             this.InitializeComponent();
+            _settings = AppSettings.Load();
             OriginalFilesDataGrid.ItemsSource = _originalFiles;
             RenamedFilesDataGrid.ItemsSource = _renamedFiles;
+            
+            // Apply settings
+            RecursiveCheckBox.IsChecked = _settings.RecursiveDefault;
+            BackupCheckBox.IsChecked = _settings.BackupDefault;
+            FormatPatternTextBox.Text = _settings.DefaultFormatPattern;
+            _currentFormatPattern = _settings.DefaultFormatPattern;
+            
+            ApplyTheme(_settings.Theme);
+        }
+
+        private void ApplyTheme(string theme)
+        {
+            var requestedTheme = theme switch
+            {
+                "Light" => ElementTheme.Light,
+                "Dark" => ElementTheme.Dark,
+                _ => ElementTheme.Default
+            };
+
+            if (Content is FrameworkElement rootElement)
+            {
+                rootElement.RequestedTheme = requestedTheme;
+            }
+        }
+
+        private async void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SettingsDialog
+            {
+                XamlRoot = this.Content.XamlRoot
+            };
+            
+            var result = await dialog.ShowAsync();
+            
+            if (result == ContentDialogResult.Primary)
+            {
+                _settings = dialog.Settings;
+                RecursiveCheckBox.IsChecked = _settings.RecursiveDefault;
+                BackupCheckBox.IsChecked = _settings.BackupDefault;
+                FormatPatternTextBox.Text = _settings.DefaultFormatPattern;
+                ApplyTheme(_settings.Theme);
+            }
+        }
+
+        private void ThemeToggle_Click(object sender, RoutedEventArgs e)
+        {
+            var currentTheme = (Content as FrameworkElement)?.RequestedTheme ?? ElementTheme.Default;
+            var newTheme = currentTheme == ElementTheme.Light ? ElementTheme.Dark : ElementTheme.Light;
+            
+            if (Content is FrameworkElement rootElement)
+            {
+                rootElement.RequestedTheme = newTheme;
+            }
         }
 
         private async void SelectFolderButton_Click(object sender, RoutedEventArgs e)
@@ -34,14 +89,13 @@ namespace RenameIt
                 folderPicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
                 folderPicker.FileTypeFilter.Add("*");
 
-                // Get the window handle for the picker
                 var hwnd = WindowNative.GetWindowHandle(this);
                 InitializeWithWindow.Initialize(folderPicker, hwnd);
 
                 var folder = await folderPicker.PickSingleFolderAsync();
                 if (folder != null)
                 {
-                    await LoadFilesFromFolder(folder);
+                    await LoadFilesFromFolder(folder, RecursiveCheckBox.IsChecked ?? false);
                 }
             }
             catch (Exception ex)
@@ -58,7 +112,6 @@ namespace RenameIt
                 filePicker.SuggestedStartLocation = PickerLocationId.DocumentsLibrary;
                 filePicker.FileTypeFilter.Add("*");
 
-                // Get the window handle for the picker
                 var hwnd = WindowNative.GetWindowHandle(this);
                 InitializeWithWindow.Initialize(filePicker, hwnd);
 
@@ -79,6 +132,7 @@ namespace RenameIt
             _originalFiles.Clear();
             _renamedFiles.Clear();
             StatusTextBlock.Text = "Files cleared. Ready.";
+            FileCountTextBlock.Text = "";
         }
 
         private async void RenameButton_Click(object sender, RoutedEventArgs e)
@@ -91,11 +145,18 @@ namespace RenameIt
 
             try
             {
+                // Show progress bar
+                OperationProgressBar.Visibility = Visibility.Visible;
+                OperationProgressBar.Value = 0;
+                OperationProgressBar.Maximum = _renamedFiles.Count;
+
                 int successCount = 0;
                 int errorCount = 0;
+                bool shouldBackup = BackupCheckBox.IsChecked ?? false;
 
-                foreach (var renamedItem in _renamedFiles)
+                for (int i = 0; i < _renamedFiles.Count; i++)
                 {
+                    var renamedItem = _renamedFiles[i];
                     try
                     {
                         var originalItem = _originalFiles.FirstOrDefault(f => 
@@ -109,31 +170,70 @@ namespace RenameIt
 
                             if (File.Exists(oldPath) && oldPath != newPath)
                             {
+                                // Backup if requested
+                                if (shouldBackup && !string.IsNullOrEmpty(_settings.BackupFolder))
+                                {
+                                    await BackupFile(oldPath);
+                                }
+
                                 File.Move(oldPath, newPath);
-                                renamedItem.Status = "Success";
+                                renamedItem.Status = "✓ Success";
                                 successCount++;
                             }
                         }
                     }
                     catch (Exception ex)
                     {
-                        renamedItem.Status = $"Error: {ex.Message}";
+                        renamedItem.Status = $"✗ Error: {ex.Message}";
                         errorCount++;
                     }
+
+                    // Update progress
+                    OperationProgressBar.Value = i + 1;
+                    StatusTextBlock.Text = $"Processing {i + 1} of {_renamedFiles.Count}...";
+                    await Task.Delay(10); // Allow UI to update
                 }
 
-                StatusTextBlock.Text = $"Renamed {successCount} files. {errorCount} errors.";
+                StatusTextBlock.Text = $"✓ Renamed {successCount} files. {(errorCount > 0 ? $"✗ {errorCount} errors." : "")}";
+                
+                // Hide progress bar
+                OperationProgressBar.Visibility = Visibility.Collapsed;
                 
                 // Refresh the file list
                 if (successCount > 0)
                 {
+                    await Task.Delay(1000);
                     _originalFiles.Clear();
                     _renamedFiles.Clear();
+                    FileCountTextBlock.Text = "";
                 }
             }
             catch (Exception ex)
             {
                 StatusTextBlock.Text = $"Error during rename: {ex.Message}";
+                OperationProgressBar.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async Task BackupFile(string filePath)
+        {
+            try
+            {
+                if (!Directory.Exists(_settings.BackupFolder))
+                {
+                    Directory.CreateDirectory(_settings.BackupFolder);
+                }
+
+                string fileName = Path.GetFileName(filePath);
+                string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                string backupPath = Path.Combine(_settings.BackupFolder, $"{timestamp}_{fileName}");
+                
+                File.Copy(filePath, backupPath);
+                await Task.CompletedTask;
+            }
+            catch
+            {
+                // Silently fail backup - don't prevent rename
             }
         }
 
@@ -152,25 +252,55 @@ namespace RenameIt
             }
         }
 
-        private async Task LoadFilesFromFolder(StorageFolder folder)
+        private async Task LoadFilesFromFolder(StorageFolder folder, bool recursive)
         {
             _originalFiles.Clear();
             _renamedFiles.Clear();
 
-            var files = await folder.GetFilesAsync();
-            foreach (var file in files)
-            {
-                var fileItem = new FileItem
-                {
-                    FileName = file.Name,
-                    DirectoryPath = file.Path.Replace(file.Name, "").TrimEnd('\\'),
-                    FileSize = await GetFileSizeString(file)
-                };
-                _originalFiles.Add(fileItem);
-            }
+            StatusTextBlock.Text = "Loading files...";
+            OperationProgressBar.Visibility = Visibility.Visible;
+            OperationProgressBar.IsIndeterminate = true;
 
-            UpdateRenamedPreview();
-            StatusTextBlock.Text = $"Loaded {_originalFiles.Count} files from folder";
+            try
+            {
+                var files = new List<StorageFile>();
+                await CollectFilesRecursive(folder, files, recursive);
+
+                foreach (var file in files)
+                {
+                    var fileItem = new FileItem
+                    {
+                        FileName = file.Name,
+                        DirectoryPath = file.Path.Replace(file.Name, "").TrimEnd('\\'),
+                        FileSize = await GetFileSizeString(file)
+                    };
+                    _originalFiles.Add(fileItem);
+                }
+
+                UpdateRenamedPreview();
+                StatusTextBlock.Text = $"✓ Loaded {_originalFiles.Count} files from folder";
+                FileCountTextBlock.Text = $"{_originalFiles.Count} file(s)";
+            }
+            finally
+            {
+                OperationProgressBar.Visibility = Visibility.Collapsed;
+                OperationProgressBar.IsIndeterminate = false;
+            }
+        }
+
+        private async Task CollectFilesRecursive(StorageFolder folder, List<StorageFile> files, bool recursive)
+        {
+            var folderFiles = await folder.GetFilesAsync();
+            files.AddRange(folderFiles);
+
+            if (recursive)
+            {
+                var subFolders = await folder.GetFoldersAsync();
+                foreach (var subFolder in subFolders)
+                {
+                    await CollectFilesRecursive(subFolder, files, recursive);
+                }
+            }
         }
 
         private async Task LoadSelectedFiles(IReadOnlyList<StorageFile> files)
@@ -190,7 +320,8 @@ namespace RenameIt
             }
 
             UpdateRenamedPreview();
-            StatusTextBlock.Text = $"Loaded {_originalFiles.Count} files";
+            StatusTextBlock.Text = $"✓ Loaded {_originalFiles.Count} files";
+            FileCountTextBlock.Text = $"{_originalFiles.Count} file(s)";
         }
 
         private async Task<string> GetFileSizeString(StorageFile file)

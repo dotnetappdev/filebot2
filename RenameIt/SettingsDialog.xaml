@@ -1,0 +1,113 @@
+<ContentDialog
+    x:Class="RenameIt.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Settings"
+    PrimaryButtonText="Save"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="SaveButton_Click">
+
+    <ScrollViewer>
+        <StackPanel Spacing="20" Padding="10">
+            
+            <!-- General Settings -->
+            <StackPanel>
+                <TextBlock Text="General" FontWeight="SemiBold" FontSize="16" Margin="0,0,0,10"/>
+                
+                <CheckBox x:Name="RecursiveDefaultCheckBox" 
+                          Content="Include subdirectories by default"
+                          Margin="0,5,0,0"/>
+                
+                <CheckBox x:Name="BackupDefaultCheckBox" 
+                          Content="Backup files before renaming by default"
+                          Margin="0,5,0,0"/>
+                
+                <StackPanel Orientation="Horizontal" Margin="0,10,0,0" Spacing="10">
+                    <TextBlock Text="Backup Folder:" VerticalAlignment="Center"/>
+                    <TextBox x:Name="BackupFolderTextBox" 
+                             PlaceholderText="e.g., C:\Backups\RenameIt"
+                             Width="300"/>
+                    <Button Content="Browse..." Click="BrowseBackupFolder_Click"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- API Keys -->
+            <StackPanel>
+                <TextBlock Text="API Keys" FontWeight="SemiBold" FontSize="16" Margin="0,10,0,10"/>
+                <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" Margin="0,0,0,10">
+                    Enter your API keys for metadata sources. Get free API keys from:
+                </TextBlock>
+                
+                <StackPanel Spacing="10">
+                    <StackPanel>
+                        <TextBlock Text="TheMovieDB API Key:"/>
+                        <HyperlinkButton Content="Get API Key" NavigateUri="https://www.themoviedb.org/settings/api" Margin="0,0,0,5"/>
+                        <TextBox x:Name="TmdbApiKeyTextBox" 
+                                 PlaceholderText="Enter TheMovieDB API key"
+                                 PasswordRevealMode="Peek"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="TheTVDB API Key:"/>
+                        <HyperlinkButton Content="Get API Key" NavigateUri="https://www.thetvdb.com/api-information" Margin="0,0,0,5"/>
+                        <TextBox x:Name="TvdbApiKeyTextBox" 
+                                 PlaceholderText="Enter TheTVDB API key"
+                                 PasswordRevealMode="Peek"/>
+                    </StackPanel>
+
+                    <StackPanel>
+                        <TextBlock Text="TVMaze:" Margin="0,5,0,0"/>
+                        <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}">
+                            TVMaze API does not require an API key
+                        </TextBlock>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Format Settings -->
+            <StackPanel>
+                <TextBlock Text="Format Settings" FontWeight="SemiBold" FontSize="16" Margin="0,10,0,10"/>
+                
+                <TextBlock Text="Default Format Pattern:"/>
+                <TextBox x:Name="DefaultFormatTextBox" 
+                         PlaceholderText="{n} - {s00e00} - {t}"
+                         FontFamily="Consolas"
+                         Margin="0,5,0,0"/>
+                
+                <TextBlock Text="Common Patterns:" Margin="0,10,0,5" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
+                <StackPanel Spacing="5">
+                    <HyperlinkButton Content="TV Shows: {n} - {s00e00} - {t}" Click="UsePattern_Click" Tag="{n} - {s00e00} - {t}"/>
+                    <HyperlinkButton Content="Movies: {n} ({y})" Click="UsePattern_Click" Tag="{n} ({y})"/>
+                    <HyperlinkButton Content="TV with folder: {n}/Season {s00}/{n} - {s00e00}" Click="UsePattern_Click" Tag="{n}/Season {s00}/{n} - {s00e00}"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Theme Settings -->
+            <StackPanel>
+                <TextBlock Text="Appearance" FontWeight="SemiBold" FontSize="16" Margin="0,10,0,10"/>
+                
+                <TextBlock Text="Theme:"/>
+                <ComboBox x:Name="ThemeComboBox" SelectedIndex="0" Margin="0,5,0,0" MinWidth="200">
+                    <ComboBoxItem Content="System Default"/>
+                    <ComboBoxItem Content="Light"/>
+                    <ComboBoxItem Content="Dark"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Advanced Settings -->
+            <StackPanel>
+                <TextBlock Text="Advanced" FontWeight="SemiBold" FontSize="16" Margin="0,10,0,10"/>
+                
+                <CheckBox x:Name="ShowHiddenFilesCheckBox" 
+                          Content="Show hidden files"
+                          Margin="0,5,0,0"/>
+                
+                <CheckBox x:Name="SkipDuplicatesCheckBox" 
+                          Content="Skip files if target already exists"
+                          Margin="0,5,0,0"/>
+            </StackPanel>
+
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>
