@@ -9,23 +9,29 @@ namespace RenameIt.CLI
 {
     public static class CommandHandlers
     {
-        public static async Task<int> RenameAsync(string input, string pattern, string source, bool recursive, bool backup, bool dryRun)
+        public static async Task<int> RenameAsync(RenameOptions opts)
         {
-            var files = GetFiles(input, recursive);
+            var files = GetFiles(opts.Input, opts.Recursive, opts.FileFilter, opts.MaxDepth);
             
             if (files.Count == 0)
             {
-                Console.WriteLine("No files found.");
+                if (!opts.Quiet)
+                    Console.WriteLine("No files found.");
                 return 1;
             }
 
-            Console.WriteLine($"Found {files.Count} file(s).");
-            Console.WriteLine($"Pattern: {pattern}");
-            Console.WriteLine($"Source: {source}");
-            Console.WriteLine();
+            if (!opts.Quiet)
+            {
+                Console.WriteLine($"Found {files.Count} file(s).");
+                Console.WriteLine($"Pattern: {opts.Pattern}");
+                Console.WriteLine($"Source: {opts.Source}");
+                if (opts.OutputDirectory != null)
+                    Console.WriteLine($"Output Directory: {opts.OutputDirectory}");
+                Console.WriteLine();
+            }
 
             var parser = new FileNameParser();
-            var renamer = new FileRenamer(source);
+            var renamer = new FileRenamer(opts.Source);
             var results = new List<(string Original, string Renamed, bool Success, string Error)>();
 
             foreach (var file in files)
@@ -36,10 +42,41 @@ namespace RenameIt.CLI
                     var metadata = parser.ParseFileName(fileName);
                     
                     // Enhance metadata with online data (placeholder - can be expanded)
-                    await EnhanceMetadataAsync(metadata, source);
+                    await EnhanceMetadataAsync(metadata, opts.Source);
                     
-                    var newFileName = renamer.ApplyFormat(pattern, metadata, fileName);
-                    var newPath = Path.Combine(Path.GetDirectoryName(file) ?? "", newFileName);
+                    var newFileName = renamer.ApplyFormat(opts.Pattern, metadata, fileName);
+                    
+                    // Determine output path
+                    string newPath;
+                    if (!string.IsNullOrEmpty(opts.OutputDirectory))
+                    {
+                        Directory.CreateDirectory(opts.OutputDirectory);
+                        newPath = Path.Combine(opts.OutputDirectory, newFileName);
+                    }
+                    else
+                    {
+                        newPath = Path.Combine(Path.GetDirectoryName(file) ?? "", newFileName);
+                    }
+
+                    // Check if target exists
+                    if (File.Exists(newPath) && newPath != file)
+                    {
+                        if (opts.SkipExisting)
+                        {
+                            if (opts.Verbose && !opts.Quiet)
+                                Console.WriteLine($"  SKIPPED (exists): {Path.GetFileName(file)}");
+                            continue;
+                        }
+                        else if (!opts.Overwrite)
+                        {
+                            if (!opts.Quiet)
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine($"  WARNING: Target exists: {newFileName}");
+                                Console.ResetColor();
+                            results.Add((file, newPath, false, "Target file already exists"));
+                            continue;
+                        }
+                    }
 
                     results.Add((file, newPath, true, string.Empty));
                 }
@@ -50,29 +87,44 @@ namespace RenameIt.CLI
             }
 
             // Display results
-            foreach (var result in results)
+            if (!opts.Quiet)
             {
-                if (result.Success)
+                foreach (var result in results)
                 {
-                    Console.WriteLine($"  {Path.GetFileName(result.Original)} -> {Path.GetFileName(result.Renamed)}");
-                }
-                else
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"  ERROR: {Path.GetFileName(result.Original)} - {result.Error}");
-                    Console.ResetColor();
+                    if (result.Success)
+                    {
+                        if (opts.Verbose)
+                        {
+                            Console.WriteLine($"  {result.Original}");
+                            Console.WriteLine($"    -> {result.Renamed}");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"  {Path.GetFileName(result.Original)} -> {Path.GetFileName(result.Renamed)}");
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"  ERROR: {Path.GetFileName(result.Original)} - {result.Error}");
+                        Console.ResetColor();
+                    }
                 }
             }
 
-            if (dryRun)
+            if (opts.DryRun)
             {
-                Console.WriteLine();
-                Console.WriteLine("DRY RUN - No files were renamed.");
+                if (!opts.Quiet)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("DRY RUN - No files were renamed.");
+                }
                 return 0;
             }
 
             // Perform actual renaming
-            Console.WriteLine();
+            if (!opts.Quiet)
+                Console.WriteLine();
             var successCount = 0;
             var failCount = 0;
 
@@ -80,90 +132,172 @@ namespace RenameIt.CLI
             {
                 try
                 {
-                    if (backup)
+                    if (opts.Backup)
                     {
                         var backupPath = result.Original + ".backup";
                         File.Copy(result.Original, backupPath, true);
                     }
 
-                    File.Move(result.Original, result.Renamed);
+                    // Use copy/delete for output directory, move for in-place
+                    if (!string.IsNullOrEmpty(opts.OutputDirectory))
+                    {
+                        File.Copy(result.Original, result.Renamed, opts.Overwrite);
+                    }
+                    else
+                    {
+                        // Skip if source and target are the same
+                        if (result.Original != result.Renamed)
+                        {
+                            File.Move(result.Original, result.Renamed, opts.Overwrite);
+                        }
+                    }
                     successCount++;
+                    
+                    if (opts.Verbose && !opts.Quiet)
+                        Console.WriteLine($"  ✓ Renamed: {Path.GetFileName(result.Original)}");
                 }
                 catch (Exception ex)
                 {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Failed to rename {Path.GetFileName(result.Original)}: {ex.Message}");
-                    Console.ResetColor();
+                    if (!opts.Quiet)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"  ✗ Failed to rename {Path.GetFileName(result.Original)}: {ex.Message}");
+                        Console.ResetColor();
+                    }
                     failCount++;
                 }
             }
 
-            Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Successfully renamed {successCount} file(s).");
-            Console.ResetColor();
-            
-            if (failCount > 0)
+            if (!opts.Quiet)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Failed to rename {failCount} file(s).");
+                Console.WriteLine();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine($"Successfully renamed {successCount} file(s).");
                 Console.ResetColor();
+                
+                if (failCount > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Failed to rename {failCount} file(s).");
+                    Console.ResetColor();
+                }
             }
 
             return failCount > 0 ? 1 : 0;
         }
 
-        public static async Task<int> PreviewAsync(string input, string pattern, string source, bool recursive)
+        public static async Task<int> PreviewAsync(PreviewOptions opts)
         {
-            return await RenameAsync(input, pattern, source, recursive, backup: false, dryRun: true);
+            var renameOpts = new RenameOptions
+            {
+                Input = opts.Input,
+                Pattern = opts.Pattern,
+                Source = opts.Source,
+                Recursive = opts.Recursive,
+                OutputDirectory = opts.OutputDirectory,
+                FileFilter = opts.FileFilter,
+                Verbose = opts.Verbose,
+                MaxDepth = opts.MaxDepth,
+                ApiKey = opts.ApiKey,
+                Language = opts.Language,
+                DryRun = true,
+                Backup = false,
+                Quiet = false
+            };
+            return await RenameAsync(renameOpts);
         }
 
-        public static async Task<int> BatchAsync(string scriptPath, bool dryRun)
+        public static async Task<int> BatchAsync(BatchOptions opts)
         {
-            if (!File.Exists(scriptPath))
+            if (!File.Exists(opts.Script))
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Script file not found: {scriptPath}");
-                Console.ResetColor();
+                if (!opts.Quiet)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine($"Script file not found: {opts.Script}");
+                    Console.ResetColor();
+                }
                 return 1;
             }
 
-            var lines = await File.ReadAllLinesAsync(scriptPath);
+            var lines = await File.ReadAllLinesAsync(opts.Script);
             var commands = ParseBatchScript(lines);
 
-            Console.WriteLine($"Executing batch script: {scriptPath}");
-            Console.WriteLine($"Found {commands.Count} command(s).");
-            Console.WriteLine();
-
-            foreach (var (index, command) in commands.Select((cmd, idx) => (idx + 1, cmd)))
+            if (!opts.Quiet)
             {
-                Console.WriteLine($"--- Command {index}/{commands.Count} ---");
-                
-                try
-                {
-                    await RenameAsync(
-                        command.Input,
-                        command.Pattern,
-                        command.Source,
-                        command.Recursive,
-                        command.Backup,
-                        dryRun);
-                }
-                catch (Exception ex)
-                {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine($"Error executing command: {ex.Message}");
-                    Console.ResetColor();
-                }
-
+                Console.WriteLine($"Executing batch script: {opts.Script}");
+                Console.WriteLine($"Found {commands.Count} command(s).");
                 Console.WriteLine();
             }
 
-            Console.WriteLine("Batch script completed.");
-            return 0;
+            int totalErrors = 0;
+            foreach (var (index, command) in commands.Select((cmd, idx) => (idx + 1, cmd)))
+            {
+                if (!opts.Quiet)
+                    Console.WriteLine($"--- Command {index}/{commands.Count} ---");
+                
+                try
+                {
+                    var renameOpts = new RenameOptions
+                    {
+                        Input = command.Input,
+                        Pattern = command.Pattern,
+                        Source = command.Source,
+                        Recursive = command.Recursive,
+                        Backup = command.Backup,
+                        DryRun = opts.DryRun,
+                        Quiet = opts.Quiet,
+                        Verbose = opts.Verbose
+                    };
+                    
+                    var result = await RenameAsync(renameOpts);
+                    if (result != 0)
+                    {
+                        totalErrors++;
+                        if (!opts.ContinueOnError)
+                        {
+                            if (!opts.Quiet)
+                                Console.WriteLine("Batch execution stopped due to error.");
+                            return result;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    totalErrors++;
+                    if (!opts.Quiet)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine($"Error executing command: {ex.Message}");
+                        Console.ResetColor();
+                    }
+                    
+                    if (!opts.ContinueOnError)
+                        return 1;
+                }
+
+                if (!opts.Quiet)
+                    Console.WriteLine();
+            }
+
+            if (!opts.Quiet)
+            {
+                if (totalErrors > 0)
+                {
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"Batch script completed with {totalErrors} error(s).");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.WriteLine("Batch script completed successfully.");
+                }
+            }
+            
+            return totalErrors > 0 ? 1 : 0;
         }
 
-        private static List<string> GetFiles(string input, bool recursive)
+        private static List<string> GetFiles(string input, bool recursive, string? fileFilter = null, int maxDepth = -1)
         {
             var files = new List<string>();
 
@@ -174,10 +308,46 @@ namespace RenameIt.CLI
             else if (Directory.Exists(input))
             {
                 var searchOption = recursive ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly;
-                var videoExtensions = new[] { ".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".m4v", ".mpg", ".mpeg" };
                 
-                files.AddRange(Directory.GetFiles(input, "*.*", searchOption)
-                    .Where(f => videoExtensions.Contains(Path.GetExtension(f).ToLowerInvariant())));
+                // Determine file extensions to filter
+                var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                if (!string.IsNullOrEmpty(fileFilter))
+                {
+                    foreach (var ext in fileFilter.Split(','))
+                    {
+                        var trimmed = ext.Trim();
+                        if (!trimmed.StartsWith("."))
+                            trimmed = "." + trimmed;
+                        extensions.Add(trimmed);
+                    }
+                }
+                else
+                {
+                    // Default video extensions
+                    var videoExtensions = new[] { ".mkv", ".mp4", ".avi", ".mov", ".wmv", ".flv", ".m4v", ".mpg", ".mpeg" };
+                    foreach (var ext in videoExtensions)
+                        extensions.Add(ext);
+                }
+                
+                var allFiles = Directory.GetFiles(input, "*.*", searchOption)
+                    .Where(f => extensions.Contains(Path.GetExtension(f)));
+
+                // Apply max depth filter if specified
+                if (maxDepth >= 0 && recursive)
+                {
+                    var inputDepth = input.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                        .Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length;
+                    
+                    allFiles = allFiles.Where(f =>
+                    {
+                        var fileDepth = Path.GetDirectoryName(f)!
+                            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                            .Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Length;
+                        return (fileDepth - inputDepth) <= maxDepth;
+                    });
+                }
+
+                files.AddRange(allFiles);
             }
 
             return files;
