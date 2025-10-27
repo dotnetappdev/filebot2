@@ -1,0 +1,43 @@
+<ContentDialog
+    x:Class="RenameIt.TemplateEditDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Edit Template"
+    PrimaryButtonText="Save"
+    CloseButtonText="Cancel"
+    DefaultButton="Primary"
+    PrimaryButtonClick="SaveButton_Click">
+
+    <StackPanel Spacing="15" Padding="10">
+        <StackPanel>
+            <TextBlock Text="Template Name:" Margin="0,0,0,5"/>
+            <TextBox x:Name="NameTextBox" 
+                     PlaceholderText="e.g., TV Show - Standard"
+                     TextChanged="ValidateInput"/>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Pattern:" Margin="0,0,0,5"/>
+            <TextBox x:Name="PatternTextBox" 
+                     PlaceholderText="e.g., {n} - {s00e00} - {t}"
+                     FontFamily="Consolas"
+                     TextChanged="ValidateInput"/>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Description:" Margin="0,0,0,5"/>
+            <TextBox x:Name="DescriptionTextBox" 
+                     PlaceholderText="Optional description"
+                     TextWrapping="Wrap"
+                     AcceptsReturn="True"
+                     Height="80"/>
+        </StackPanel>
+
+        <StackPanel>
+            <TextBlock Text="Available Tokens:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+            <TextBlock TextWrapping="Wrap" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}" FontSize="12">
+                {n} - Name, {s} - Season, {e} - Episode, {s00} - Season (2 digits), {e00} - Episode (2 digits), {s00e00} - S01E02 format, {sxe} - 1x02 format, {t} - Title, {y} - Year, {ext} - Extension, {fn} - Filename
+            </TextBlock>
+        </StackPanel>
+    </StackPanel>
+</ContentDialog>

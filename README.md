@@ -17,6 +17,7 @@ A Windows file renaming application built with WinUI 3 and C#, inspired by FileB
 - **Live Preview**: See renamed files before applying changes
 
 ### Advanced Features
+- **Template Management**: Save and reuse rename patterns with built-in template database
 - **Settings Dialog**: Configure API keys, default patterns, backup folder, and more
 - **Backup Before Rename**: Automatically backup files before renaming
 - **Theme Support**: Light and dark mode with system default option
@@ -81,11 +82,35 @@ dotnet run
 
 1. **Select Files**: Click "Select Files" or "Select Folder" to load files
    - Check "Include Subdirectories" to scan folders recursively
-2. **Choose Format**: Enter your desired format pattern in the text box
-3. **Select Source**: Choose a metadata source from the dropdown
-4. **Preview**: The right pane shows how files will be renamed
-5. **Rename**: Click "Rename Files" to apply the changes
+2. **Choose Template (Optional)**: Select a saved template from the dropdown or click "Manage Templates"
+3. **Choose Format**: Enter your desired format pattern in the text box (or use a template)
+4. **Select Source**: Choose a metadata source from the dropdown
+5. **Preview**: The right pane shows how files will be renamed
+6. **Rename**: Click "Rename Files" to apply the changes
    - Check "Backup Before Rename" to save copies of original files
+
+### Template Management
+
+Save commonly used rename patterns for quick reuse:
+
+1. **Using Templates**: 
+   - Select a template from the "Template" dropdown to auto-fill the pattern
+   - Templates include pre-configured patterns for TV shows, movies, and more
+   
+2. **Managing Templates**:
+   - Click "Manage Templates" to open the template manager
+   - **Add**: Create new templates with custom patterns
+   - **Edit**: Modify existing templates
+   - **Delete**: Remove templates you no longer need
+   
+3. **Default Templates**: The app includes 5 built-in templates:
+   - TV Show - Standard: `{n} - {s00e00} - {t}`
+   - TV Show - Compact: `{n} {sxe} {t}`
+   - Movie - Standard: `{n} ({y})`
+   - TV Show - Plex: `{n}/Season {s00}/{n} - {s00e00} - {t}`
+   - TV Show - Custom Season: `{n} - Season {s} Episode {e}`
+
+Templates are stored in a local SQLite database and persist across sessions.
 
 ### Settings (Ctrl+,)
 
@@ -110,20 +135,27 @@ Access the settings dialog to configure:
 
 ```
 RenameIt/
-├── App.xaml / App.xaml.cs         - Application entry point
-├── MainWindow.xaml / .xaml.cs     - Main UI and logic
-└── RenameIt.csproj                - Project configuration
+├── App.xaml / App.xaml.cs                   - Application entry point
+├── MainWindow.xaml / .xaml.cs               - Main UI and logic
+├── SettingsDialog.xaml / .xaml.cs           - Settings configuration UI
+├── TemplatesDialog.xaml / .xaml.cs          - Template management UI
+├── TemplateEditDialog.xaml / .xaml.cs       - Template add/edit UI
+├── AppSettings.cs                           - Application settings persistence
+└── RenameIt.csproj                          - Project configuration
 
 RenameIt.Core/
-├── FileNameParser.cs              - Parses filenames to extract metadata
-├── FileRenamer.cs                 - Applies format patterns to create new names
-├── MetadataProviders.cs           - Interfaces with movie/TV databases
-└── RenameIt.Core.csproj           - Core library configuration
+├── FileNameParser.cs                        - Parses filenames to extract metadata
+├── FileRenamer.cs                           - Applies format patterns to create new names
+├── MetadataProviders.cs                     - Interfaces with movie/TV databases
+├── RenameTemplate.cs                        - Template data model
+├── TemplateRepository.cs                    - SQLite database operations for templates
+└── RenameIt.Core.csproj                     - Core library configuration
 
 RenameIt.Tests/
-├── FileNameParserTests.cs         - Parser unit tests
-├── FileRenamerTests.cs            - Renamer unit tests
-└── RenameIt.Tests.csproj          - Test project configuration
+├── FileNameParserTests.cs                   - Parser unit tests
+├── FileRenamerTests.cs                      - Renamer unit tests
+├── TemplateRepositoryTests.cs               - Template repository unit tests
+└── RenameIt.Tests.csproj                    - Test project configuration
 ```
 
 ## Architecture
@@ -131,7 +163,9 @@ RenameIt.Tests/
 - **FileNameParser**: Extracts show names, seasons, episodes, and years from filenames
 - **FileRenamer**: Applies format patterns using FileBot-compatible syntax
 - **MetadataProviders**: Fetch additional metadata from online sources
+- **TemplateRepository**: Manages template CRUD operations with SQLite database
 - **MainWindow**: Manages the UI with dual data grids for original and renamed files
+- **TemplatesDialog**: Provides UI for managing saved rename templates
 
 ## License
 
