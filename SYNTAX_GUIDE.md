@@ -32,6 +32,7 @@ RenameIt uses [FileBot-compatible naming syntax](https://www.filebot.net/naming.
 |-------|-------------|----------------|
 | `{ext}` | File extension | "mkv" |
 | `{source}` | Metadata source | "TheMovieDB" |
+| `{fn}` | Original filename | "breaking.bad.s01e02" |
 
 ## Example Renaming Patterns
 

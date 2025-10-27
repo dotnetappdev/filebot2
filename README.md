@@ -30,6 +30,7 @@ RenameIt supports the following FileBot-compatible format patterns:
 - `{y}` - Year
 - `{source}` - Metadata source
 - `{ext}` - File extension
+- `{fn}` - Original filename without extension
 
 ### Example Patterns
 

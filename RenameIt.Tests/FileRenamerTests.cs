@@ -160,5 +160,26 @@ namespace RenameIt.Tests
             Assert.DoesNotContain("?", result);
             Assert.DoesNotContain("/", result);
         }
+
+        [Fact]
+        public void ApplyFormat_OriginalFilenameToken_ShouldIncludeOriginalName()
+        {
+            // Arrange
+            var metadata = new FileMetadata
+            {
+                IsTV = true,
+                ShowName = "Breaking Bad",
+                Season = 1,
+                Episode = 2,
+                Extension = ".mkv"
+            };
+            string pattern = "{n} - {s00e00} - [{fn}]";
+
+            // Act
+            string result = _renamer.ApplyFormat(pattern, metadata, "breaking.bad.s01e02.720p.mkv");
+
+            // Assert
+            Assert.Equal("Breaking Bad - S01E02 - [breaking.bad.s01e02.720p].mkv", result);
+        }
     }
 }

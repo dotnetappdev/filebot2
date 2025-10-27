@@ -21,39 +21,49 @@ namespace RenameIt
 
             string result = pattern;
 
-            // FileBot-compatible format patterns
+            // FileBot-compatible format patterns (based on https://www.filebot.net/naming.html)
+            
             // {n} - Name (show name or movie name)
             result = result.Replace("{n}", GetName(metadata));
 
+            // Season/Episode tokens
             // {s} - Season number
             result = result.Replace("{s}", metadata.Season.ToString());
-
+            
             // {e} - Episode number
             result = result.Replace("{e}", metadata.Episode.ToString());
-
-            // {s00} - Season number (2 digits)
+            
+            // {s00} - Season number (2 digits with leading zero)
             result = result.Replace("{s00}", metadata.Season.ToString("00"));
-
-            // {e00} - Episode number (2 digits)
+            
+            // {e00} - Episode number (2 digits with leading zero)
             result = result.Replace("{e00}", metadata.Episode.ToString("00"));
-
+            
             // {s00e00} - Season and episode (e.g., S01E02)
             result = result.Replace("{s00e00}", $"S{metadata.Season:00}E{metadata.Episode:00}");
-
+            
             // {sxe} - Season and episode (e.g., 1x02)
             result = result.Replace("{sxe}", $"{metadata.Season}x{metadata.Episode:00}");
 
-            // {t} - Episode title
+            // Title tokens
+            // {t} - Episode title / Movie title
             result = result.Replace("{t}", metadata.EpisodeTitle);
 
-            // {y} - Year
+            // Year tokens
+            // {y} - Year (4 digits)
             result = result.Replace("{y}", metadata.Year > 0 ? metadata.Year.ToString() : string.Empty);
 
-            // {source} - Source (e.g., TheMovieDB)
+            // Extension token
+            // {ext} - File extension without dot
+            result = result.Replace("{ext}", metadata.Extension.TrimStart('.'));
+
+            // Metadata source token
+            // {source} - Metadata source (e.g., TheMovieDB)
             result = result.Replace("{source}", _source);
 
-            // {ext} - Extension
-            result = result.Replace("{ext}", metadata.Extension.TrimStart('.'));
+            // Additional useful tokens
+            // {fn} - Original filename without extension
+            result = result.Replace("{fn}", System.IO.Path.GetFileNameWithoutExtension(originalFileName));
 
             // Clean up any remaining empty spaces or multiple spaces
             result = Regex.Replace(result, @"\s+", " ").Trim();
