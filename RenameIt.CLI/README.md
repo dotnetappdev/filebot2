@@ -1,6 +1,6 @@
 # RenameIt.CLI - Console GUI
 
-A modern console-based GUI for RenameIt, built with Terminal.Gui (created by Miguel de Icaza). This provides a full-featured, mouse-enabled terminal interface inspired by classic file managers like XTree Gold.
+A modern console-based GUI for RenameIt, built with Terminal.Gui by Miguel de Icaza. This provides a full-featured, mouse-enabled terminal interface inspired by classic file managers like XTree Gold.
 
 ## Features
 
