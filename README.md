@@ -1,5 +1,20 @@
 # RenameIt
 
+A powerful file renaming application inspired by FileBot's renaming capabilities and using FileBot-compatible naming syntax. Available as both a Windows GUI application (WinUI 3) and a cross-platform console GUI (Terminal.Gui).
+
+## Applications
+
+### Windows GUI (RenameIt)
+A modern Windows application built with WinUI 3, providing a rich graphical interface with dual-pane layout, template management, and theme support.
+
+### Console GUI (RenameIt.CLI)
+A cross-platform console interface built with Terminal.Gui, providing full mouse support and an XTree Gold-style interface. Launch with `-gui` argument.
+
+```bash
+RenameIt.CLI -gui
+```
+
+See [RenameIt.CLI/README.md](RenameIt.CLI/README.md) for console GUI documentation.
 A file renaming application for media files (Plex, Kodi, etc.) built with C#, inspired by FileBot's powerful renaming capabilities and using FileBot-compatible naming syntax.
 
 **Available in two versions:**
@@ -19,6 +34,7 @@ A file renaming application for media files (Plex, Kodi, etc.) built with C#, in
 - **Recursive Directory Scanning**: Optionally scan subdirectories for files
 - **Smart Parsing**: Automatically detects TV shows and movies from filenames
 - **Live Preview**: See renamed files before applying changes
+- **Cross-Platform Console GUI**: Terminal.Gui interface with full mouse support (RenameIt.CLI)
 
 ### Advanced Features
 - **CLI Tool**: Command-line interface for automation and scripting
@@ -26,10 +42,12 @@ A file renaming application for media files (Plex, Kodi, etc.) built with C#, in
 - **Template Management**: Save and reuse rename patterns with built-in template database
 - **Settings Dialog**: Configure API keys, default patterns, backup folder, and more
 - **Backup Before Rename**: Automatically backup files before renaming
-- **Theme Support**: Light and dark mode with system default option
+- **Theme Support**: Light and dark mode with system default option (Windows GUI)
 - **Progress Feedback**: Modern progress bar showing rename operations
 - **Keyboard Shortcuts**: Ctrl+O (folder), Ctrl+Shift+O (files), Ctrl+R (rename), Ctrl+, (settings)
 - **Visual Feedback**: Icons, status indicators, and file count display
+- **Mouse Support**: Full mouse interaction in console GUI (Terminal.Gui)
+
 
 ## Format Syntax
 
@@ -56,9 +74,11 @@ RenameIt supports the following FileBot-compatible format patterns:
 
 ## Building
 
-**Note**: This is a Windows-specific application built with WinUI 3. It requires Windows 10/11 to build and run.
+### Windows GUI (RenameIt)
 
-### Requirements
+**Note**: The Windows GUI is a Windows-specific application built with WinUI 3. It requires Windows 10/11 to build and run.
+
+#### Requirements
 
 - Windows 10 version 1809 (build 17763) or later
 - Windows 11
@@ -67,7 +87,7 @@ RenameIt supports the following FileBot-compatible format patterns:
   - .NET Desktop Development workload
   - Windows App SDK components
 
-### Build Instructions
+#### Build Instructions
 
 **GUI Version (Windows only):**
 1. Open `RenameIt.sln` in Visual Studio 2022
@@ -84,6 +104,38 @@ dotnet build RenameIt.CLI/RenameIt.CLI.csproj
 
 Run:
 ```bash
+dotnet restore
+dotnet build RenameIt/RenameIt.csproj
+```
+
+### Console GUI (RenameIt.CLI)
+
+**Note**: The Console GUI is cross-platform and works on Windows, Linux, and macOS.
+
+#### Requirements
+
+- .NET 8 SDK or later
+- Terminal that supports ANSI/VT100 escape sequences
+
+#### Build Instructions
+
+Using the command line:
+
+```bash
+dotnet restore
+dotnet build RenameIt.CLI/RenameIt.CLI.csproj
+```
+
+#### Run Instructions
+
+```bash
+dotnet run --project RenameIt.CLI/RenameIt.CLI.csproj -- -gui
+```
+
+Or after building:
+
+```bash
+./RenameIt.CLI/bin/Debug/net8.0/RenameIt.CLI -gui
 dotnet run --project RenameIt.CLI/RenameIt.CLI.csproj -- [command] [options]
 ```
 
@@ -95,6 +147,9 @@ Where `<runtime-id>` is: `win-x64`, `linux-x64`, `osx-x64`, etc.
 
 ## Usage
 
+### Windows GUI
+
+#### Basic Workflow
 ### GUI Usage
 
 ### Basic Workflow
@@ -107,6 +162,41 @@ Where `<runtime-id>` is: `win-x64`, `linux-x64`, `osx-x64`, etc.
 5. **Preview**: The right pane shows how files will be renamed
 6. **Rename**: Click "Rename Files" to apply the changes
    - Check "Backup Before Rename" to save copies of original files
+
+#### Keyboard Shortcuts
+
+- `Ctrl+O` - Select Folder
+- `Ctrl+Shift+O` - Select Files
+- `Ctrl+Delete` - Clear Files
+- `Ctrl+R` - Rename Files
+- `Ctrl+,` - Open Settings
+- Theme Toggle Button - Switch between light and dark mode
+
+### Console GUI
+
+#### Basic Workflow
+
+1. **Launch**: Run `RenameIt.CLI -gui` to start the console interface
+2. **Navigate**: Use mouse clicks or Tab key to navigate between controls
+3. **Select Files**: 
+   - Enter a path and click "Load Files", or
+   - Use File > Select Folder/Files from the menu
+4. **Configure Options**:
+   - Select a template from the dropdown (optional)
+   - Enter or modify the format pattern
+   - Choose a metadata source
+   - Enable/disable recursive scanning and backup options
+5. **Preview**: Click "Update Preview" to see how files will be renamed
+6. **Rename**: Click "Rename Files" to apply changes
+
+#### Mouse Support
+
+The console GUI provides full mouse support:
+- Click buttons to execute actions
+- Click in lists to select items
+- Click and drag to scroll
+- Click menu items to access features
+- Click text fields to edit
 
 ### Template Management
 
@@ -129,16 +219,16 @@ Save commonly used rename patterns for quick reuse:
    - TV Show - Plex: `{n}/Season {s00}/{n} - {s00e00} - {t}`
    - TV Show - Custom Season: `{n} - Season {s} Episode {e}`
 
-Templates are stored in a local SQLite database and persist across sessions.
+Templates are stored in a local SQLite database and persist across sessions. Templates are shared between the Windows GUI and Console GUI.
 
-### Settings (Ctrl+,)
+### Settings
 
 Access the settings dialog to configure:
 
 - **API Keys**: Enter API keys for TheMovieDB and TheTVDB for enhanced metadata
 - **Backup Folder**: Set default location for file backups
 - **Default Format Pattern**: Set your preferred naming pattern
-- **Theme**: Choose Light, Dark, or System default theme
+- **Theme**: Choose Light, Dark, or System default theme (Windows GUI only)
 - **Advanced Options**: Show hidden files, skip duplicates, etc.
 
 ### Keyboard Shortcuts
@@ -189,6 +279,11 @@ RenameIt.CLI/
 └── RenameIt.CLI.csproj                      - CLI project configuration
 └── RenameIt.csproj                          - Project configurationmain
 
+RenameIt.CLI/
+├── Program.cs                                - Console GUI application with Terminal.Gui
+├── README.md                                 - Console GUI documentation
+└── RenameIt.CLI.csproj                       - CLI project configuration
+
 RenameIt.Core/
 ├── FileNameParser.cs                        - Parses filenames to extract metadata
 ├── FileRenamer.cs                           - Applies format patterns to create new names
@@ -207,6 +302,9 @@ RenameIt.Tests/
 
 ## Architecture
 
+- **RenameIt.Core**: Shared library containing all core functionality
+  - Used by both Windows GUI and Console GUI
+  - Ensures consistent behavior across platforms
 - **FileNameParser**: Extracts show names, seasons, episodes, and years from filenames
 - **FileRenamer**: Applies format patterns using FileBot-compatible syntax
 - **MetadataProviders**: Fetch additional metadata from online sources
