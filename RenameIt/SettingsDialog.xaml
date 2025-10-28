@@ -71,15 +71,15 @@
                 
                 <TextBlock Text="Default Format Pattern:"/>
                 <TextBox x:Name="DefaultFormatTextBox" 
-                         PlaceholderText="{n} - {s00e00} - {t}"
+                         PlaceholderText="{}{n} - {s00e00} - {t}"
                          FontFamily="Consolas"
                          Margin="0,5,0,0"/>
                 
                 <TextBlock Text="Common Patterns:" Margin="0,10,0,5" Foreground="{ThemeResource SystemControlForegroundBaseMediumBrush}"/>
                 <StackPanel Spacing="5">
-                    <HyperlinkButton Content="TV Shows: {n} - {s00e00} - {t}" Click="UsePattern_Click" Tag="{n} - {s00e00} - {t}"/>
-                    <HyperlinkButton Content="Movies: {n} ({y})" Click="UsePattern_Click" Tag="{n} ({y})"/>
-                    <HyperlinkButton Content="TV with folder: {n}/Season {s00}/{n} - {s00e00}" Click="UsePattern_Click" Tag="{n}/Season {s00}/{n} - {s00e00}"/>
+                    <HyperlinkButton Content="TV Shows: {n} - {s00e00} - {t}" Click="UsePattern_Click" Tag="{}{n} - {s00e00} - {t}"/>
+                    <HyperlinkButton Content="Movies: {n} ({y})" Click="UsePattern_Click" Tag="{}{n} ({y})"/>
+                    <HyperlinkButton Content="TV with folder: {n}/Season {s00}/{n} - {s00e00}" Click="UsePattern_Click" Tag="{}{n}/Season {s00}/{n} - {s00e00}"/>
                 </StackPanel>
             </StackPanel>
 
