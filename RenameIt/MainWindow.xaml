@@ -95,7 +95,7 @@
             <TextBlock Grid.Row="1" Grid.Column="0" Text="Format Pattern:" VerticalAlignment="Center" Margin="0,10,10,0"/>
             <TextBox Grid.Row="1" Grid.Column="1" x:Name="FormatPatternTextBox" 
                      PlaceholderText="e.g., {n} - {s00e00} - {t}" 
-                     Text="{n} - {s00e00} - {t}"
+                     Text="{}{n} - {s00e00} - {t}"
                      TextChanged="FormatPatternTextBox_TextChanged"
                      FontFamily="Consolas"
                      Margin="0,10,0,0"/>
