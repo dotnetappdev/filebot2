@@ -604,10 +604,7 @@ namespace RenameIt.CLI
             public string NewFileName { get; set; } = string.Empty;
         }
     }
-}
 
-namespace RenameIt.CLI
-{
     [Verb("rename", HelpText = "Rename files using a format pattern")]
     public class RenameOptions
     {
