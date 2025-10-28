@@ -1,0 +1,9 @@
+<Project>
+  <PropertyGroup>
+    <!-- Enable building Windows-targeted projects on non-Windows platforms -->
+    <!-- This is needed for CI/CD but the resulting binaries won't run on non-Windows -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <!-- Suppress RID warnings for Windows-specific projects when building on non-Windows -->
+    <NoWarn>$(NoWarn);NETSDK1083</NoWarn>
+  </PropertyGroup>
+</Project>
