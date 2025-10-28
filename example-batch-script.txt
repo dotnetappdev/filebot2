@@ -1,0 +1,79 @@
+# RenameIt Batch Script Example
+# This file demonstrates the batch script format for RenameIt CLI
+#
+# Usage: renameit batch example-batch-script.txt
+#
+# Lines starting with # or // are comments
+# Empty lines are ignored
+# Each section starts with a name in brackets [Section Name]
+
+# ============================================================================
+# TV Show Renaming Example
+# ============================================================================
+[TV Shows - Breaking Bad]
+input=C:\Media\TV Shows\Breaking Bad\Season 1
+pattern={n} - {s00e00} - {t}
+source=TheMovieDB
+recursive=false
+backup=true
+
+# ============================================================================
+# Movie Collection Example
+# ============================================================================
+[Movies]
+input=C:\Media\Movies
+pattern={n} ({y})
+source=TheMovieDB
+recursive=false
+backup=true
+
+# ============================================================================
+# Anime Collection Example  
+# ============================================================================
+[Anime - Naruto]
+input=C:\Media\Anime\Naruto
+pattern={n} - {sxe} - {t}
+source=TheTVDB
+recursive=true
+backup=false
+
+# ============================================================================
+# Recursive Processing Example
+# Process all video files in a directory tree
+# ============================================================================
+[Complete Media Library]
+input=C:\Media
+pattern={n} - {s00e00} - {t}
+source=TheMovieDB
+recursive=true
+backup=true
+
+# ============================================================================
+# Alternative Naming Pattern Examples
+# ============================================================================
+
+# Pattern: Show Name - Season X Episode Y
+# [Alternative Pattern 1]
+# input=C:\Media\TV
+# pattern={n} - Season {s} Episode {e}
+# source=TheMovieDB
+# recursive=false
+# backup=false
+
+# Pattern: Year - Movie Name
+# [Alternative Pattern 2]
+# input=C:\Media\Movies
+# pattern={y} - {n}
+# source=TheMovieDB
+# recursive=false
+# backup=false
+
+# ============================================================================
+# Notes:
+# ============================================================================
+# - Always use absolute paths for input directories
+# - Set backup=true for important files
+# - Test with --dry-run first: renameit batch script.txt --dry-run
+# - Supported sources: TheMovieDB, TheTVDB, TVMaze
+# - recursive=true processes all subdirectories
+# ============================================================================

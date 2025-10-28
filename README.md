@@ -15,6 +15,11 @@ RenameIt.CLI -gui
 ```
 
 See [RenameIt.CLI/README.md](RenameIt.CLI/README.md) for console GUI documentation.
+A file renaming application for media files (Plex, Kodi, etc.) built with C#, inspired by FileBot's powerful renaming capabilities and using FileBot-compatible naming syntax.
+
+**Available in two versions:**
+- **GUI Version**: Windows desktop app built with WinUI 3
+- **CLI Version**: Cross-platform command-line tool for scripts and automation
 
 ## Features
 
@@ -32,6 +37,8 @@ See [RenameIt.CLI/README.md](RenameIt.CLI/README.md) for console GUI documentati
 - **Cross-Platform Console GUI**: Terminal.Gui interface with full mouse support (RenameIt.CLI)
 
 ### Advanced Features
+- **CLI Tool**: Command-line interface for automation and scripting
+- **Batch Scripts**: Execute multiple rename operations from script files
 - **Template Management**: Save and reuse rename patterns with built-in template database
 - **Settings Dialog**: Configure API keys, default patterns, backup folder, and more
 - **Backup Before Rename**: Automatically backup files before renaming
@@ -82,13 +89,20 @@ RenameIt supports the following FileBot-compatible format patterns:
 
 #### Build Instructions
 
+**GUI Version (Windows only):**
 1. Open `RenameIt.sln` in Visual Studio 2022
 2. Restore NuGet packages
 3. Build the solution (F7)
 4. Run the application (F5)
 
-Or using the command line:
+**CLI Version (Cross-platform):**
 
+Build:
+```bash
+dotnet build RenameIt.CLI/RenameIt.CLI.csproj
+```
+
+Run:
 ```bash
 dotnet restore
 dotnet build RenameIt/RenameIt.csproj
@@ -122,13 +136,23 @@ Or after building:
 
 ```bash
 ./RenameIt.CLI/bin/Debug/net8.0/RenameIt.CLI -gui
+dotnet run --project RenameIt.CLI/RenameIt.CLI.csproj -- [command] [options]
 ```
+
+Publish as standalone:
+```bash
+dotnet publish RenameIt.CLI/RenameIt.CLI.csproj -c Release -r <runtime-id> --self-contained
+```
+Where `<runtime-id>` is: `win-x64`, `linux-x64`, `osx-x64`, etc.
 
 ## Usage
 
 ### Windows GUI
 
 #### Basic Workflow
+### GUI Usage
+
+### Basic Workflow
 
 1. **Select Files**: Click "Select Files" or "Select Folder" to load files
    - Check "Include Subdirectories" to scan folders recursively
@@ -207,6 +231,36 @@ Access the settings dialog to configure:
 - **Theme**: Choose Light, Dark, or System default theme (Windows GUI only)
 - **Advanced Options**: Show hidden files, skip duplicates, etc.
 
+### Keyboard Shortcuts
+
+- `Ctrl+O` - Select Folder
+- `Ctrl+Shift+O` - Select Files
+- `Ctrl+Delete` - Clear Files
+- `Ctrl+R` - Rename Files
+- `Ctrl+,` - Open Settings
+- Theme Toggle Button - Switch between light and dark mode
+
+### CLI Usage
+
+See the [CLI Guide](CLI_GUIDE.md) for complete documentation.
+
+**Quick Start:**
+
+Preview files before renaming:
+```bash
+renameit preview "/path/to/files" "{n} - {s00e00} - {t}"
+```
+
+Rename TV show episodes:
+```bash
+renameit rename "/path/to/shows" "{n} - {s00e00} - {t}" -s TheMovieDB -b
+```
+
+Execute a batch script:
+```bash
+renameit batch rename-script.txt
+```
+
 ## Project Structure
 
 ```
@@ -217,7 +271,13 @@ RenameIt/
 ├── TemplatesDialog.xaml / .xaml.cs          - Template management UI
 ├── TemplateEditDialog.xaml / .xaml.cs       - Template add/edit UI
 ├── AppSettings.cs                           - Application settings persistence
-└── RenameIt.csproj                          - Project configuration
+└── RenameIt.csproj                          - GUI project configuration
+
+RenameIt.CLI/
+├── Program.cs                               - CLI entry point and command definitions
+├── CommandHandlers.cs                       - CLI command implementations
+└── RenameIt.CLI.csproj                      - CLI project configuration
+└── RenameIt.csproj                          - Project configurationmain
 
 RenameIt.CLI/
 ├── Program.cs                                - Console GUI application with Terminal.Gui
@@ -236,6 +296,7 @@ RenameIt.Tests/
 ├── FileNameParserTests.cs                   - Parser unit tests
 ├── FileRenamerTests.cs                      - Renamer unit tests
 ├── TemplateRepositoryTests.cs               - Template repository unit tests
+├── CLICommandHandlersTests.cs               - CLI command handler tests
 └── RenameIt.Tests.csproj                    - Test project configuration
 ```
 
@@ -250,6 +311,7 @@ RenameIt.Tests/
 - **TemplateRepository**: Manages template CRUD operations with SQLite database
 - **MainWindow**: Manages the UI with dual data grids for original and renamed files
 - **TemplatesDialog**: Provides UI for managing saved rename templates
+- **CommandHandlers**: Implements CLI commands for rename, preview, and batch operations
 
 ## License
 
