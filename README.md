@@ -101,11 +101,35 @@ Where `<runtime-id>` is: `win-x64`, `linux-x64`, `osx-x64`, etc.
 
 1. **Select Files**: Click "Select Files" or "Select Folder" to load files
    - Check "Include Subdirectories" to scan folders recursively
-2. **Choose Format**: Enter your desired format pattern in the text box
-3. **Select Source**: Choose a metadata source from the dropdown
-4. **Preview**: The right pane shows how files will be renamed
-5. **Rename**: Click "Rename Files" to apply the changes
+2. **Choose Template (Optional)**: Select a saved template from the dropdown or click "Manage Templates"
+3. **Choose Format**: Enter your desired format pattern in the text box (or use a template)
+4. **Select Source**: Choose a metadata source from the dropdown
+5. **Preview**: The right pane shows how files will be renamed
+6. **Rename**: Click "Rename Files" to apply the changes
    - Check "Backup Before Rename" to save copies of original files
+
+### Template Management
+
+Save commonly used rename patterns for quick reuse:
+
+1. **Using Templates**: 
+   - Select a template from the "Template" dropdown to auto-fill the pattern
+   - Templates include pre-configured patterns for TV shows, movies, and more
+   
+2. **Managing Templates**:
+   - Click "Manage Templates" to open the template manager
+   - **Add**: Create new templates with custom patterns
+   - **Edit**: Modify existing templates
+   - **Delete**: Remove templates you no longer need
+   
+3. **Default Templates**: The app includes 5 built-in templates:
+   - TV Show - Standard: `{n} - {s00e00} - {t}`
+   - TV Show - Compact: `{n} {sxe} {t}`
+   - Movie - Standard: `{n} ({y})`
+   - TV Show - Plex: `{n}/Season {s00}/{n} - {s00e00} - {t}`
+   - TV Show - Custom Season: `{n} - Season {s} Episode {e}`
+
+Templates are stored in a local SQLite database and persist across sessions.
 
 ### Settings (Ctrl+,)
 
@@ -163,6 +187,7 @@ RenameIt.CLI/
 ├── Program.cs                               - CLI entry point and command definitions
 ├── CommandHandlers.cs                       - CLI command implementations
 └── RenameIt.CLI.csproj                      - CLI project configuration
+└── RenameIt.csproj                          - Project configurationmain
 
 RenameIt.Core/
 ├── FileNameParser.cs                        - Parses filenames to extract metadata

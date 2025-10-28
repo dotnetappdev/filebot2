@@ -11,10 +11,16 @@ This PR implements a complete Windows file renaming application built with WinUI
   - Left pane: Original files in a DataGrid
   - Right pane: Renamed preview in a DataGrid
 - **File Selection**: Both folder and individual file selection
+- **Template Management**: 
+  - Template selector ComboBox for quick access
+  - "Manage Templates" button for CRUD operations
+  - TemplatesDialog for listing and managing saved templates
+  - TemplateEditDialog for adding/editing individual templates
 - **Format Pattern Editor**: Real-time preview as pattern changes
 - **Metadata Source Selection**: TheMovieDB, TVMaze, TheTVDB
 - **Live Preview**: Updates automatically when pattern or files change
 - **Rename Operation**: Applies changes with error handling
+- **Settings Dialog**: Configure API keys, defaults, and preferences
 
 ### 2. Core Library (RenameIt.Core)
 Platform-independent business logic extracted for testability:
@@ -49,6 +55,17 @@ Platform-independent business logic extracted for testability:
 - Async API calls (currently simulated)
 - Consistent error handling
 
+#### RenameTemplate & TemplateRepository
+- **RenameTemplate Model**: Data class for rename patterns
+  - Properties: Id, Name, Pattern, Description, CreatedAt, UpdatedAt
+  - Persistent storage in SQLite database
+- **TemplateRepository**: Full CRUD operations
+  - Create/Read/Update/Delete templates
+  - SQLite database with automatic initialization
+  - Default template seeding (5 built-in templates)
+  - Transaction support for data integrity
+  - Optimized queries with parameterized statements
+
 ### 3. Unit Tests (RenameIt.Tests)
 Comprehensive test coverage:
 - **FileNameParserTests**: 7 tests
@@ -60,7 +77,12 @@ Comprehensive test coverage:
   - Token substitution
   - Invalid character handling
   - Edge cases
-- **All 14 tests passing**
+- **TemplateRepositoryTests**: 8 tests
+  - CRUD operations (Create, Read, Update, Delete)
+  - Database initialization
+  - Default template seeding
+  - Edge cases (invalid IDs, duplicates)
+- **All 23 tests passing**
 
 ### 4. Documentation
 Five comprehensive documentation files:
@@ -208,6 +230,7 @@ All requirements from the problem statement have been implemented:
 ✅ **DataGrid Views**: Long list views with DataGrid controls
 ✅ **Dual-Pane Layout**: Original files left, renamed right
 ✅ **Same Formatting Syntax**: Compatible with FileBot patterns
+✅ **Template Storage**: SQLite database for saving rename patterns
 
 ## Known Limitations
 
@@ -215,25 +238,24 @@ All requirements from the problem statement have been implemented:
 2. **Build Environment**: Cannot build/test UI on Linux (core library works)
 3. **Metadata API**: Currently simulated, not calling real APIs
 4. **No Folder Organization**: Files renamed in-place only
-5. **Single Format Pattern**: No pattern templates/saving
 
 ## Future Enhancements
 
 Potential additions for future versions:
 1. Real API integration with TheMovieDB/TVMaze/TheTVDB
-2. Pattern templates and favorites
+2. Monaco editor for advanced syntax highlighting
 3. Folder organization support (`{n}/Season {s}/{filename}`)
 4. Undo functionality
-5. Dark mode support
-6. Episode guide preview
-7. Batch operation queue
-8. Custom token creation
-9. Settings persistence
-10. Drag-and-drop file selection
+5. Episode guide preview
+6. Batch operation queue
+7. Custom token creation
+8. Import/Export templates
+9. Drag-and-drop file selection
+10. Cover art support
 
 ## Testing Status
 
-- ✅ **Unit Tests**: 14/14 passing
+- ✅ **Unit Tests**: 23/23 passing
 - ✅ **Code Review**: All comments addressed
 - ✅ **Security Scan**: 0 vulnerabilities found
 - ⚠️ **UI Testing**: Requires Windows environment

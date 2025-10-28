@@ -32,6 +32,12 @@ namespace RenameIt
         public bool ShowHiddenFiles { get; set; } = false;
         public bool SkipDuplicates { get; set; } = false;
 
+        // Templates Database
+        public string TemplatesDatabasePath { get; set; } = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            "RenameIt",
+            "templates.db");
+
         public static AppSettings Load()
         {
             try
