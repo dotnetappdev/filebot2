@@ -1,5 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
+  <!-- Skip this project entirely on non-Windows platforms as it requires Windows-specific WinUI 3 and XAML compiler -->
+  <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
+    <TargetFramework>net8.0</TargetFramework>
+    <!-- Prevent compilation on non-Windows -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
@@ -15,18 +23,18 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.5.240802000" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
     <PackageReference Include="CommunityToolkit.WinUI.UI.Controls.DataGrid" Version="7.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <ProjectReference Include="..\RenameIt.Core\RenameIt.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(OS)' == 'Windows_NT'">
     <None Remove="MainWindow.xaml" />
     <None Remove="App.xaml" />
   </ItemGroup>

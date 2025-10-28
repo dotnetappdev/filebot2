@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using CommandLine;
+using Serilog;
 
 namespace RenameIt.CLI
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task<int> Main(string[] args)
         {
             // Check if -gui argument is provided
             if (args.Length > 0 && args[0].Equals("-gui", StringComparison.OrdinalIgnoreCase))
@@ -19,6 +21,7 @@ namespace RenameIt.CLI
                 try
                 {
                     Application.Run<RenameItApp>();
+                    return 0;
                 }
                 finally
                 {
@@ -27,11 +30,60 @@ namespace RenameIt.CLI
             }
             else
             {
-                Console.WriteLine("RenameIt - File Renaming Tool");
-                Console.WriteLine("Usage:");
-                Console.WriteLine("  RenameIt.CLI -gui    Launch the GUI console interface");
-                Console.WriteLine();
-                Console.WriteLine("For command line usage, use the Windows application.");
+                // Configure logging
+                LoggingConfig.ConfigureLogging();
+
+                try
+                {
+                    // Configure parser to show help when no arguments provided
+                    var parser = new Parser(with => {
+                        with.HelpWriter = Console.Out;
+                        with.AutoHelp = true;
+                        with.AutoVersion = true;
+                    });
+
+                    // If no arguments provided, show help
+                    if (args.Length == 0)
+                    {
+                        Console.WriteLine("RenameIt CLI - Media File Renaming Tool");
+                        Console.WriteLine("========================================");
+                        Console.WriteLine();
+                        Console.WriteLine("USAGE:");
+                        Console.WriteLine("  renameit <command> [options]");
+                        Console.WriteLine();
+                        Console.WriteLine("COMMANDS:");
+                        Console.WriteLine("  rename      Rename files using a format pattern");
+                        Console.WriteLine("  preview     Preview renamed files without applying changes");
+                        Console.WriteLine("  batch       Execute a batch script file with multiple operations");
+                        Console.WriteLine();
+                        Console.WriteLine("OPTIONS:");
+                        Console.WriteLine("  --help      Display help for a specific command");
+                        Console.WriteLine("  --version   Display version information");
+                        Console.WriteLine();
+                        Console.WriteLine("EXAMPLES:");
+                        Console.WriteLine("  renameit rename \"/media/tv\" \"{n} - {s00e00} - {t}\" -s TheMovieDB");
+                        Console.WriteLine("  renameit preview \"/media/movies\" \"{n} ({y})\" -r");
+                        Console.WriteLine("  renameit batch organize-media.txt --dry-run");
+                        Console.WriteLine();
+                        Console.WriteLine("For more information on a specific command, use:");
+                        Console.WriteLine("  renameit <command> --help");
+                        Console.WriteLine();
+                        return 0;
+                    }
+
+                    Log.Information("Command line arguments: {Args}", string.Join(" ", args));
+
+                    return await parser.ParseArguments<RenameOptions, PreviewOptions, BatchOptions>(args)
+                        .MapResult(
+                            (RenameOptions opts) => CommandHandlers.RenameAsync(opts),
+                            (PreviewOptions opts) => CommandHandlers.PreviewAsync(opts),
+                            (BatchOptions opts) => CommandHandlers.BatchAsync(opts),
+                            errs => Task.FromResult(1));
+                }
+                finally
+                {
+                    LoggingConfig.CloseLogging();
+                }
             }
         }
     }
@@ -551,63 +603,7 @@ namespace RenameIt.CLI
             public string Directory { get; set; } = string.Empty;
             public string NewFileName { get; set; } = string.Empty;
         }
-﻿using CommandLine;
-using RenameIt.CLI;
-using Serilog;
-
-// Configure logging
-LoggingConfig.ConfigureLogging();
-
-try
-{
-    // Configure parser to show help when no arguments provided
-    var parser = new Parser(with => {
-        with.HelpWriter = Console.Out;
-        with.AutoHelp = true;
-        with.AutoVersion = true;
-    });
-
-    // If no arguments provided, show help
-    if (args.Length == 0)
-    {
-        Console.WriteLine("RenameIt CLI - Media File Renaming Tool");
-        Console.WriteLine("========================================");
-        Console.WriteLine();
-        Console.WriteLine("USAGE:");
-        Console.WriteLine("  renameit <command> [options]");
-        Console.WriteLine();
-        Console.WriteLine("COMMANDS:");
-        Console.WriteLine("  rename      Rename files using a format pattern");
-        Console.WriteLine("  preview     Preview renamed files without applying changes");
-        Console.WriteLine("  batch       Execute a batch script file with multiple operations");
-        Console.WriteLine();
-        Console.WriteLine("OPTIONS:");
-        Console.WriteLine("  --help      Display help for a specific command");
-        Console.WriteLine("  --version   Display version information");
-        Console.WriteLine();
-        Console.WriteLine("EXAMPLES:");
-        Console.WriteLine("  renameit rename \"/media/tv\" \"{n} - {s00e00} - {t}\" -s TheMovieDB");
-        Console.WriteLine("  renameit preview \"/media/movies\" \"{n} ({y})\" -r");
-        Console.WriteLine("  renameit batch organize-media.txt --dry-run");
-        Console.WriteLine();
-        Console.WriteLine("For more information on a specific command, use:");
-        Console.WriteLine("  renameit <command> --help");
-        Console.WriteLine();
-        return 0;
     }
-
-    Log.Information("Command line arguments: {Args}", string.Join(" ", args));
-
-    return await parser.ParseArguments<RenameOptions, PreviewOptions, BatchOptions>(args)
-        .MapResult(
-            (RenameOptions opts) => CommandHandlers.RenameAsync(opts),
-            (PreviewOptions opts) => CommandHandlers.PreviewAsync(opts),
-            (BatchOptions opts) => CommandHandlers.BatchAsync(opts),
-            errs => Task.FromResult(1));
-}
-finally
-{
-    LoggingConfig.CloseLogging();
 }
 
 namespace RenameIt.CLI
